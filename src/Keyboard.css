@@ -1,0 +1,211 @@
+/* Styles for the keyboard drawn in Keyboard.tsx. */
+
+.keyboard {
+  display: flex;
+  width: min(var(--keyboard-width), calc(100vw - 64px));
+  min-height: 0;
+  flex: 1;
+  gap: 9px;
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid #262d34;
+  border-radius: 12px;
+  background: #12171b;
+}
+
+.keyboard--macos {
+  --keyboard-width: 616px;
+}
+
+.keyboard--windows,
+.keyboard--linux {
+  --keyboard-width: 768px;
+}
+
+.keyboard__main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Navigation cluster and arrows, three units wide, aligned with the rows
+   of the main block. */
+.keyboard__side {
+  display: grid;
+  width: 16%;
+  flex: none;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.nav-keys {
+  display: grid;
+  min-height: 0;
+  grid-row: 1 / span 2;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+/* "Page Up" and "Page Down" are printed in full, wrapping onto a second line. */
+.nav-keys .keyboard__key {
+  line-height: 1.1;
+  text-align: center;
+  white-space: normal;
+}
+
+.keyboard__side .arrow-keys {
+  min-width: 0;
+  flex: none;
+  grid-row: 4 / span 2;
+  margin-left: 0;
+}
+
+.keyboard__row {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  gap: 5px;
+}
+
+.keyboard__key {
+  --key-width: 1;
+  display: grid;
+  min-width: 0;
+  /* A cap n units wide swallows the n-1 gaps it spans, so columns line up
+     across rows even though the rows hold different numbers of caps. */
+  flex: var(--key-width) var(--key-width) calc((var(--key-width) - 1) * 5px);
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #2f373e;
+  border-radius: 6px;
+  color: #d8dde0;
+  background: #232a30;
+  font-size: clamp(8px, 0.9vw, 10px);
+  font-weight: 620;
+  white-space: nowrap;
+  transition: color 90ms linear, background 90ms linear, border-color 90ms linear;
+}
+
+/* Two-line caps: the symbol above the label. Centred unless the cap is wide
+   enough that the original prints the label against its outer edge. */
+.keyboard__key--stacked {
+  align-content: center;
+  grid-auto-rows: auto;
+  gap: 1px;
+  line-height: 1.15;
+}
+
+/* A wide cap carrying only a word prints it along the bottom, against the
+   outer edge of the board. The horizontal inset lives on the content, not the
+   cap: with flex-basis 0 a cap's padding would be added on top of its share of
+   the row and break the unit widths. */
+.keyboard__key--start,
+.keyboard__key--end {
+  padding-bottom: 3px;
+  align-content: end;
+  grid-auto-rows: auto;
+  gap: 1px;
+  line-height: 1.15;
+}
+
+.keyboard__key--start {
+  justify-items: start;
+}
+
+.keyboard__key--start > * {
+  padding-left: 5px;
+}
+
+.keyboard__key--end {
+  justify-items: end;
+}
+
+.keyboard__key--end > * {
+  padding-right: 5px;
+}
+
+/* A modifier cap pins its symbol to the top corner and runs the word across
+   the full width of the bottom. */
+.keyboard__key--stacked.keyboard__key--start,
+.keyboard__key--stacked.keyboard__key--end {
+  padding: 3px 0;
+  align-content: space-between;
+}
+
+.keyboard__key--stacked .keyboard__key-label {
+  justify-self: stretch;
+  padding: 0;
+  text-align: center;
+}
+
+.keyboard__key--start .keyboard__key-symbol,
+.keyboard__key--end .keyboard__key-symbol {
+  font-size: 1.15em;
+}
+
+/* Icon beside the word, the way a PC cap prints Tab, Shift and Enter. */
+.keyboard__key--symbol-beside {
+  align-content: center;
+  justify-content: center;
+  grid-auto-flow: column;
+  gap: 4px;
+}
+
+/* Icon under the word, for a cap whose legend already fills it. */
+.keyboard__key--symbol-below .keyboard__key-symbol {
+  order: 1;
+}
+
+/* A cap with no word to explain it carries a larger icon. */
+.keyboard__key--icon-only .keyboard__key-symbol {
+  font-size: 1.7em;
+}
+
+.keyboard__key--pressed {
+  border-color: #6457cd;
+  color: #fff;
+  background: #6457cd;
+}
+
+.arrow-keys {
+  display: grid;
+  min-width: 0;
+  flex: 3 3 10px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.arrow-keys .keyboard__key {
+  font-size: 9px;
+}
+
+/* Solid triangles read heavier than line arrows at the same size. */
+.keyboard--macos .arrow-keys .keyboard__key {
+  font-size: 7px;
+}
+
+.arrow-keys__up { grid-column: 2; grid-row: 1; }
+.arrow-keys__left { grid-column: 1; grid-row: 2; }
+.arrow-keys__down { grid-column: 2; grid-row: 2; }
+.arrow-keys__right { grid-column: 3; grid-row: 2; }
+
+/* Inside the bottom row (macOS) the side arrows run full height, with the
+   half-height up/down pair between them. */
+.keyboard__row .arrow-keys__left,
+.keyboard__row .arrow-keys__right {
+  grid-row: 1 / span 2;
+}
+@media (max-height: 730px) {
+  /* The dock loses 34px here, so the board narrows to keep the caps square. */
+  .keyboard--macos {
+    --keyboard-width: 518px;
+  }
+
+  .keyboard--windows,
+  .keyboard--linux {
+    --keyboard-width: 646px;
+  }
+}

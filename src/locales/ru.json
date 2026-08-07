@@ -1,1 +1,5 @@
-{}
+{
+  "keyboard": {
+    "ariaLabel": "Клавиатура {{platform}}"
+  }
+}
