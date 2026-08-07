@@ -180,7 +180,17 @@ const arrowsFor = (currentPlatform: LessonPlatform): Key[] => {
 };
 
 
-function KeyCap({ keyDef, pressed, extraClass = "" }: { keyDef: Key; pressed: boolean; extraClass?: string }) {
+function KeyCap({
+  keyDef,
+  pressed,
+  hinted = false,
+  extraClass = "",
+}: {
+  keyDef: Key;
+  pressed: boolean;
+  hinted?: boolean;
+  extraClass?: string;
+}) {
   const stacked = keyDef.symbol && keyDef.label;
 
   return (
@@ -191,6 +201,7 @@ function KeyCap({ keyDef, pressed, extraClass = "" }: { keyDef: Key; pressed: bo
         stacked && keyDef.symbolAt ? `keyboard__key--symbol-${keyDef.symbolAt}` : "",
         keyDef.symbol && !keyDef.label ? "keyboard__key--icon-only" : "",
         keyDef.align ? `keyboard__key--${keyDef.align}` : "",
+        hinted ? "keyboard__key--hinted" : "",
         pressed ? "keyboard__key--pressed" : "",
         extraClass,
       ].join(" ")}
@@ -204,9 +215,11 @@ function KeyCap({ keyDef, pressed, extraClass = "" }: { keyDef: Key; pressed: bo
 
 function ArrowKeys({
   currentPlatform,
+  hintedKeys,
   pressedKeys,
 }: {
   currentPlatform: LessonPlatform;
+  hintedKeys?: Set<string>;
   pressedKeys: Set<string>;
 }) {
   return (
@@ -215,6 +228,7 @@ function ArrowKeys({
         <KeyCap
           extraClass={`arrow-keys__${key.id.replace("Arrow", "").toLowerCase()}`}
           key={key.id}
+          hinted={hintedKeys?.has(key.id)}
           keyDef={key}
           pressed={pressedKeys.has(key.id)}
         />
@@ -225,9 +239,13 @@ function ArrowKeys({
 
 function Keyboard({
   currentPlatform,
+  hintedKeys,
   pressedKeys,
 }: {
   currentPlatform: LessonPlatform;
+  // Keys the current lesson step suggests. The lesson owns the pacing; the
+  // keyboard only shows what it is told to show.
+  hintedKeys?: Set<string>;
   pressedKeys: Set<string>;
 }) {
   const { t, i18n } = useTranslation();
@@ -253,10 +271,19 @@ function Keyboard({
         {rows.map((row, rowIndex) => (
           <div className="keyboard__row" key={rowIndex}>
             {row.map((key) => (
-              <KeyCap key={key.id} keyDef={key} pressed={pressedKeys.has(key.id)} />
+              <KeyCap
+                hinted={hintedKeys?.has(key.id)}
+                key={key.id}
+                keyDef={key}
+                pressed={pressedKeys.has(key.id)}
+              />
             ))}
             {isMac && rowIndex === rows.length - 1 && (
-              <ArrowKeys currentPlatform={currentPlatform} pressedKeys={pressedKeys} />
+              <ArrowKeys
+            currentPlatform={currentPlatform}
+            hintedKeys={hintedKeys}
+            pressedKeys={pressedKeys}
+          />
             )}
           </div>
         ))}
@@ -266,10 +293,19 @@ function Keyboard({
         <div className="keyboard__side">
           <div className="nav-keys">
             {navKeys.map((key) => (
-              <KeyCap key={key.id} keyDef={key} pressed={pressedKeys.has(key.id)} />
+              <KeyCap
+                hinted={hintedKeys?.has(key.id)}
+                key={key.id}
+                keyDef={key}
+                pressed={pressedKeys.has(key.id)}
+              />
             ))}
           </div>
-          <ArrowKeys currentPlatform={currentPlatform} pressedKeys={pressedKeys} />
+          <ArrowKeys
+            currentPlatform={currentPlatform}
+            hintedKeys={hintedKeys}
+            pressedKeys={pressedKeys}
+          />
         </div>
       )}
     </div>

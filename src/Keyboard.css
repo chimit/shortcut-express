@@ -1,6 +1,11 @@
 /* Styles for the keyboard drawn in Keyboard.tsx. */
 
+/* Everything is derived from one number: the pitch, a cap plus the gap after
+   it. The dock's height fixes the cap height, so stating the pitch here makes
+   every board's caps come out identical and square, instead of two widths
+   guessed separately drifting apart. */
 .keyboard {
+  --key-pitch: 48px;
   display: flex;
   width: min(var(--keyboard-width), calc(100vw - 64px));
   min-height: 0;
@@ -13,13 +18,18 @@
   background: #12171b;
 }
 
+/* 14.5 units, minus the trailing gap, plus padding and borders. */
 .keyboard--macos {
-  --keyboard-width: 616px;
+  --keyboard-width: calc(14.5 * var(--key-pitch) + 17px);
+  --key-font: 11px;
 }
 
+/* 15 for the main block plus 3 for the navigation cluster, and the gap
+   between them. */
 .keyboard--windows,
 .keyboard--linux {
-  --keyboard-width: 768px;
+  --keyboard-width: calc(18 * var(--key-pitch) + 21px);
+  --key-font: 11px;
 }
 
 .keyboard__main {
@@ -34,7 +44,7 @@
    of the main block. */
 .keyboard__side {
   display: grid;
-  width: 16%;
+  width: calc(3 * var(--key-pitch) - 5px);
   flex: none;
   grid-template-rows: repeat(5, minmax(0, 1fr));
   gap: 5px;
@@ -82,7 +92,7 @@
   border-radius: 6px;
   color: #d8dde0;
   background: #232a30;
-  font-size: clamp(8px, 0.9vw, 10px);
+  font-size: var(--key-font);
   font-weight: 620;
   white-space: nowrap;
   transition: color 90ms linear, background 90ms linear, border-color 90ms linear;
@@ -163,6 +173,14 @@
   font-size: 1.7em;
 }
 
+/* Suggested by the lesson but not yet pressed: outlined, so it reads as an
+   invitation rather than as a key that is already down. */
+.keyboard__key--hinted {
+  border-color: var(--accent);
+  color: #fff;
+  background: var(--accent-soft);
+}
+
 .keyboard__key--pressed {
   border-color: #6457cd;
   color: #fff;
@@ -179,12 +197,12 @@
 }
 
 .arrow-keys .keyboard__key {
-  font-size: 9px;
+  font-size: calc(var(--key-font) * 0.85);
 }
 
 /* Solid triangles read heavier than line arrows at the same size. */
 .keyboard--macos .arrow-keys .keyboard__key {
-  font-size: 7px;
+  font-size: calc(var(--key-font) * 0.65);
 }
 
 .arrow-keys__up { grid-column: 2; grid-row: 1; }
@@ -197,15 +215,4 @@
 .keyboard__row .arrow-keys__left,
 .keyboard__row .arrow-keys__right {
   grid-row: 1 / span 2;
-}
-@media (max-height: 730px) {
-  /* The dock loses 34px here, so the board narrows to keep the caps square. */
-  .keyboard--macos {
-    --keyboard-width: 518px;
-  }
-
-  .keyboard--windows,
-  .keyboard--linux {
-    --keyboard-width: 646px;
-  }
 }
