@@ -6,6 +6,7 @@
    guessed separately drifting apart. */
 .keyboard {
   --key-pitch: 48px;
+  --key-font: 11px;
   display: flex;
   width: min(var(--keyboard-width), calc(100vw - 64px));
   min-height: 0;
@@ -21,7 +22,6 @@
 /* 14.5 units, minus the trailing gap, plus padding and borders. */
 .keyboard--macos {
   --keyboard-width: calc(14.5 * var(--key-pitch) + 17px);
-  --key-font: 11px;
 }
 
 /* 15 for the main block plus 3 for the navigation cluster, and the gap
@@ -29,7 +29,6 @@
 .keyboard--windows,
 .keyboard--linux {
   --keyboard-width: calc(18 * var(--key-pitch) + 21px);
-  --key-font: 11px;
 }
 
 .keyboard__main {
@@ -173,12 +172,21 @@
   font-size: 1.7em;
 }
 
-/* Suggested by the lesson but not yet pressed: outlined, so it reads as an
-   invitation rather than as a key that is already down. */
+/* Breathing rather than merely lit: a steady glow blends into the board, a
+   slow pulse reads as "press me". */
 .keyboard__key--hinted {
   border-color: var(--accent);
   color: #fff;
   background: var(--accent-soft);
+  animation: key-breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes key-breathe {
+  50% {
+    border-color: #cfc7ff;
+    background: #4a3f8f;
+    box-shadow: 0 0 0 4px rgba(139, 124, 246, 0.18);
+  }
 }
 
 .keyboard__key--pressed {

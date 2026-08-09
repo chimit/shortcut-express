@@ -41,9 +41,6 @@ const namesFor = (currentPlatform: LessonPlatform) =>
 const symbolsFor = (currentPlatform: LessonPlatform) =>
   currentPlatform === "macos" ? ({} as Partial<typeof pcSymbols>) : pcSymbols;
 
-// A PC board sets the icon next to the word; Apple has no icon on these caps.
-const beside = "beside" as const;
-
 const widthsFor = (currentPlatform: LessonPlatform) =>
   currentPlatform === "macos" ? keyWidths.macos : keyWidths.pc;
 
@@ -75,27 +72,27 @@ const letterRows = (language: Language, currentPlatform: LessonPlatform): Key[][
 
   return [
     [
-      { id: "Tab", label: names.tab, symbol: symbols.tab, symbolAt: beside, width: widths.tab, align: "start" },
+      { id: "Tab", label: names.tab, symbol: symbols.tab, symbolAt: "beside", width: widths.tab, align: "start" },
       ...top.split("").map((label, index) => ({ id: letterCodes[0][index], label })),
       { id: "Backslash", label: "\\", width: widths.backslash },
     ],
     [
       { id: "CapsLock", label: names.capsLock, width: widths.capsLock, align: "start" },
       ...home.split("").map((label, index) => ({ id: letterCodes[1][index], label })),
-      { id: "Enter", label: names.enter, symbol: symbols.enter, symbolAt: beside, width: widths.enter, align: "end" },
+      { id: "Enter", label: names.enter, symbol: symbols.enter, symbolAt: "beside", width: widths.enter, align: "end" },
     ],
     [
-      { id: "ShiftLeft", label: names.shift, symbol: symbols.shift, symbolAt: beside, width: widths.shiftLeft, align: "start" },
+      { id: "ShiftLeft", label: names.shift, symbol: symbols.shift, symbolAt: "beside", width: widths.shiftLeft, align: "start" },
       ...bottom.split("").map((label, index) => ({ id: letterCodes[2][index], label })),
-      { id: "ShiftRight", label: names.shift, symbol: symbols.shift, symbolAt: beside, width: widths.shiftRight, align: "end" },
+      { id: "ShiftRight", label: names.shift, symbol: symbols.shift, symbolAt: "beside", width: widths.shiftRight, align: "end" },
     ],
   ];
 };
 
-const topRow = (currentPlatform: LessonPlatform, language: Language): Key[] => [
-  language === "ru"
-    ? { id: "Backquote", label: "ё" }
-    : { id: "Backquote", symbol: "~", label: "`" },
+// Only the letter caps change with the language; the symbol row reads the same
+// on every board, this key included.
+const topRow = (currentPlatform: LessonPlatform): Key[] => [
+  { id: "Backquote", symbol: "~", label: "`" },
   ..."1234567890".split("").map((label) => ({ id: `Digit${label}`, label })),
   { id: "Minus", label: "−" },
   { id: "Equal", label: "=" },
@@ -255,7 +252,7 @@ function Keyboard({
   // centre theirs.
   const centreLegends = (row: Key[]): Key[] => row.map((key) => ({ ...key, align: undefined }));
   const rows = [
-    topRow(currentPlatform, language),
+    topRow(currentPlatform),
     ...letterRows(language, currentPlatform),
     bottomRow(currentPlatform),
   ].map((row) => (isMac ? row : centreLegends(row)));
