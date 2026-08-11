@@ -41,7 +41,6 @@
     "next": "Next",
     "back": "Back",
     "stepOf": "Step {{current}} of {{total}}",
-    "list": "Chapter steps",
     "continueHint": "Press <keys/> to continue"
   },
   "documentTitle": "Chapter {{current}}. {{title}}",

@@ -41,7 +41,6 @@
     "next": "Дальше",
     "back": "Назад",
     "stepOf": "Шаг {{current}} из {{total}}",
-    "list": "Шаги главы",
     "continueHint": "Нажми <keys/>, чтобы продолжить"
   },
   "documentTitle": "Глава {{current}}. {{title}}",

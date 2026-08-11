@@ -269,30 +269,6 @@ function App() {
       </header>
 
       <main className="workspace">
-        <div
-          aria-label={t("progress", { current: chapterIndex + 1, total: chapters.length })}
-          className="course-progress"
-          role="group"
-        >
-          {chapters.map((item, index) => (
-            <button
-              aria-current={index === chapterIndex}
-              aria-label={t("documentTitle", { current: index + 1, title: t(item.title) })}
-              className="course-progress__chapter"
-              data-state={index === chapterIndex ? "current" : index < chapterIndex ? "done" : "todo"}
-              key={item.title}
-              onClick={() => {
-                setChapterIndex(index);
-                setStepIndex(0);
-                setDone(0);
-              }}
-              onMouseDown={keepFocus}
-              title={t(item.title)}
-              type="button"
-            />
-          ))}
-        </div>
-
         <section className="editor-panel" aria-label={t("editor.ariaLabel")}>
           <div className="editor-panel__bar">
             <div aria-hidden="true" className="window-controls">
@@ -306,6 +282,44 @@ function App() {
             </div>
           </div>
           <div className="document-canvas">
+            {/* One bar for the whole course, drawn along the top edge of the page
+                itself and clipped by its corners, the way a browser draws its
+                own loading. A segment per chapter, a tick per step: two separate
+                paginations cost a band of height each and made you read your
+                position in two places. */}
+            <div
+              aria-label={t("progress", { current: chapterIndex + 1, total: chapters.length })}
+              className="course-progress"
+              role="group"
+            >
+              {chapters.map((item, index) => (
+                <div className="course-progress__chapter" key={item.title}>
+                  {item.steps.map((_, at) => (
+                    <button
+                      aria-current={index === chapterIndex && at === stepIndex}
+                      aria-label={`${t("documentTitle", { current: index + 1, title: t(item.title) })} — ${t("step.stepOf", { current: at + 1, total: item.steps.length })}`}
+                      className="course-progress__step"
+                      data-state={
+                        index < chapterIndex || (index === chapterIndex && at < stepIndex)
+                          ? "done"
+                          : index === chapterIndex && at === stepIndex
+                            ? "current"
+                            : "todo"
+                      }
+                      key={at}
+                      onClick={() => {
+                        setChapterIndex(index);
+                        setStepIndex(at);
+                        setDone(0);
+                      }}
+                      onMouseDown={keepFocus}
+                      title={t(item.title)}
+                      type="button"
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
             <div className="document-canvas__label">{t("editor.section")}</div>
             <textarea
               aria-label={t("editor.cursor")}
@@ -380,21 +394,6 @@ function App() {
               </span>
             )}
           </button>
-        </div>
-
-        <div aria-label={t("step.list")} className="steps" role="group">
-          {chapter.steps.map((_, index) => (
-            <button
-              aria-current={index === stepIndex}
-              aria-label={t("step.stepOf", { current: index + 1, total: chapter.steps.length })}
-              className="steps__dot"
-              data-state={index === stepIndex ? "current" : index < stepIndex ? "done" : "todo"}
-              key={index}
-              onClick={() => goTo(index)}
-              onMouseDown={keepFocus}
-              type="button"
-            />
-          ))}
         </div>
       </main>
 

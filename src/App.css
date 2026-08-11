@@ -154,8 +154,8 @@ button:focus-visible {
 }
 
 .workspace {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
   width: min(760px, calc(100vw - 48px));
   min-height: 0;
@@ -166,6 +166,7 @@ button:focus-visible {
 .editor-panel {
   display: grid;
   min-height: 0;
+  flex: 1;
   grid-template-rows: 58px minmax(0, 1fr);
   overflow: hidden;
   border: 1px solid var(--line);
@@ -213,7 +214,9 @@ button:focus-visible {
 }
 
 .document-canvas {
+  position: relative;
   display: flex;
+  overflow: hidden;
   min-height: 0;
   flex-direction: column;
   margin: 12px;
@@ -395,46 +398,6 @@ button:focus-visible {
   opacity: 0.8;
 }
 
-/* Step pagination: position at a glance, and a way back to re-read. */
-.steps {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-}
-
-.steps__dot {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.steps__dot::before {
-  position: absolute;
-  border-radius: 50%;
-  background: #39434c;
-  content: "";
-  inset: 7px;
-  transition: background 140ms ease, inset 140ms ease;
-}
-
-.steps__dot[data-state="done"]::before {
-  background: #5b5487;
-}
-
-.steps__dot[data-state="current"]::before {
-  background: var(--accent);
-  inset: 5.5px;
-}
-
-.steps__dot:hover::before {
-  background: #6d64ad;
-  inset: 5.5px;
-}
-
 /* A shortcut inside a sentence is drawn as a cap, so it reads as a key rather
    than as punctuation that wandered in. */
 .key-cap {
@@ -490,16 +453,29 @@ button:focus-visible {
   }
 }
 
-/* Where the whole course lives: above the document, spanning its width, one
-   segment per chapter. The step dots below cover the current chapter only. */
+/* The course bar, drawn the way a browser draws its own loading: a hairline
+   along the top edge of the page, running under its rounded corners. A segment
+   per chapter, a tick per step. It takes no height from the layout — it lies
+   over the page's own top margin. */
 .course-progress {
+  position: absolute;
+  z-index: 1;
   display: flex;
-  gap: 5px;
+  gap: 2px;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .course-progress__chapter {
+  display: flex;
+  flex: 1;
+  gap: 1px;
+}
+
+.course-progress__step {
   position: relative;
-  height: 18px;
+  height: 10px;
   flex: 1;
   padding: 0;
   border: 0;
@@ -507,25 +483,25 @@ button:focus-visible {
   cursor: pointer;
 }
 
-.course-progress__chapter::before {
+.course-progress__step::before {
   position: absolute;
-  border-radius: 999px;
-  background: #2c3339;
+  background: #e0dbcd;
   content: "";
-  inset: 6px 0;
-  transition: background 160ms ease, inset 160ms ease;
+  inset: 0 0 auto;
+  height: 3px;
+  transition: background 160ms ease, height 160ms ease;
 }
 
-.course-progress__chapter[data-state="done"]::before {
-  background: #4d4585;
+.course-progress__step[data-state="done"]::before {
+  background: #8b7cf6;
 }
 
-.course-progress__chapter[data-state="current"]::before {
+.course-progress__step[data-state="current"]::before {
+  height: 5px;
   background: var(--accent);
-  inset: 5px 0;
 }
 
-.course-progress__chapter:hover::before {
-  inset: 5px 0;
+.course-progress__step:hover::before {
+  height: 5px;
   background: #6d64ad;
 }
