@@ -8,7 +8,7 @@
   --key-pitch: 48px;
   --key-font: 11px;
   display: flex;
-  width: min(var(--keyboard-width), calc(100vw - 64px));
+  width: min(var(--keyboard-width), calc(100vw - 32px));
   min-height: 0;
   flex: 1;
   gap: 9px;

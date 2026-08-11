@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "Coldkey",
-        "width": 960,
-        "height": 1040,
+        "width": 917,
+        "height": 880,
         "minWidth": 840,
         "minHeight": 820
       }

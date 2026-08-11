@@ -48,7 +48,7 @@ button:focus-visible {
 
 .app-shell {
   display: grid;
-  grid-template-rows: 64px minmax(0, 1fr) 285px;
+  grid-template-rows: 44px minmax(0, 1fr) 285px;
   width: 100%;
   height: 100dvh;
   overflow: hidden;
@@ -101,49 +101,12 @@ button:focus-visible {
   font-weight: 800;
 }
 
-.platform-tabs {
-  display: flex;
-  gap: 3px;
-  padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #11161a;
-}
-
-.platform-tabs__tab {
-  position: relative;
-  min-width: 82px;
-  padding: 7px 13px;
-  border: 0;
-  border-radius: 7px;
-  color: var(--muted);
-  background: transparent;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 650;
-  transition: color 140ms ease, background 140ms ease;
-}
-
-.platform-tabs__tab[aria-checked="true"] {
-  color: #fff;
-  background: #252c33;
-  box-shadow: inset 0 0 0 1px #343d45;
-}
-
-.platform-tabs__current {
-  position: absolute;
-  top: 5px;
-  right: 6px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #77d6ae;
-}
-
+/* Both switches are the same control: set once, then ignored for the rest of
+   the course, so neither earns more room than the other. */
+.platform-tabs,
 .language-switch {
   display: flex;
   align-items: center;
-  justify-self: end;
   gap: 2px;
   padding: 2px;
   border: 1px solid var(--line);
@@ -151,8 +114,14 @@ button:focus-visible {
   background: #11161a;
 }
 
+.language-switch {
+  justify-self: end;
+}
+
+.platform-tabs__tab,
 .language-switch__button {
-  padding: 4px 6px;
+  position: relative;
+  padding: 4px 7px;
   border: 0;
   border-radius: 4px;
   color: #69737b;
@@ -160,11 +129,23 @@ button:focus-visible {
   cursor: pointer;
   font-size: 9px;
   font-weight: 750;
+  transition: color 140ms ease, background 140ms ease;
 }
 
+.platform-tabs__tab[aria-checked="true"],
 .language-switch__button[aria-pressed="true"] {
   color: #fff;
   background: #2a3138;
+}
+
+.platform-tabs__current {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #77d6ae;
 }
 
 /* A column rather than named rows: off the lesson screens the chapter bar and
@@ -177,7 +158,7 @@ button:focus-visible {
   width: min(760px, calc(100vw - 48px));
   min-height: 0;
   margin: 0 auto;
-  padding: 22px 0 4px;
+  padding: 8px 0 4px;
 }
 
 .editor-panel {
@@ -185,7 +166,7 @@ button:focus-visible {
   display: grid;
   min-height: 0;
   flex: 1;
-  grid-template-rows: 58px minmax(0, 1fr);
+  grid-template-rows: 44px minmax(0, 1fr);
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -199,7 +180,6 @@ button:focus-visible {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 16px;
-  border-bottom: 1px solid var(--line);
   color: #7f8991;
   background: #171c21;
   /* A real title bar is quiet: macOS sets its titles at 13px semibold, Windows
@@ -237,8 +217,8 @@ button:focus-visible {
   overflow: hidden;
   min-height: 0;
   flex-direction: column;
-  margin: 12px;
-  padding: clamp(20px, 3vh, 30px);
+  margin: 0 10px 10px;
+  padding: clamp(16px, 2.2vh, 26px);
   border-radius: 10px;
   color: var(--paper-ink);
   background: var(--paper);
@@ -246,7 +226,7 @@ button:focus-visible {
 }
 
 .document-canvas__label {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   color: #969b96;
   font-size: 11px;
   font-weight: 750;
@@ -289,7 +269,7 @@ button:focus-visible {
   min-height: 0;
   flex-direction: column;
   align-items: center;
-  padding: 12px 24px 16px;
+  padding: 12px 16px 16px;
 }
 
 /* Width comes from the keyboard, which sizes itself from the available
@@ -325,7 +305,7 @@ button:focus-visible {
    of all the arrows beside it. */
 .narration__body {
   display: flex;
-  min-height: 116px;
+  min-height: 112px;
   flex-direction: column;
   justify-content: center;
   gap: 8px;
