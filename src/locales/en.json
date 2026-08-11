@@ -124,5 +124,38 @@
     "dropLine": "Third: the last line doesn't belong. Delete the whole thing.",
     "dropLineDone": "Clean. The note is in order.",
     "closing": "That's it. You found a typo, swapped words and cut what didn't belong — without once reaching for the mouse. From here it becomes habit on its own."
+  },
+  "courses": {
+    "title": "Courses",
+    "label": "Choose a course",
+    "say": "Pick a course — <up/> and <down/>. Open it with <enter/>.",
+    "back": "Back to the course list"
+  },
+  "course": {
+    "text": {
+      "title": "Text without a mouse",
+      "blurb": "Move through text, select it, edit and undo — without touching the mouse."
+    }
+  },
+  "finish": {
+    "title": "Course complete",
+    "say": "Course complete. Here is everything it taught — keep it handy for a while. <enter/> goes back to the course list."
+  },
+  "action": {
+    "moveLeft": "Move the cursor by characters",
+    "moveUp": "Move the cursor by lines",
+    "moveWordLeft": "Move the cursor by words",
+    "lineStart": "To the start or end of the line",
+    "documentStart": "To the start or end of the text",
+    "moveLeftShift": "Select a character",
+    "moveWordLeftShift": "Select a word",
+    "lineStartShift": "Select to the start or end",
+    "selectAll": "Select everything",
+    "deleteWordLeft": "Erase a word",
+    "copy": "Copy",
+    "cut": "Cut",
+    "paste": "Paste",
+    "undo": "Undo",
+    "redo": "Redo"
   }
 }

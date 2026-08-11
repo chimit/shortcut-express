@@ -45,7 +45,25 @@ export type Chapter = {
   steps: Step[];
 };
 
-export const chapters: Chapter[] = [
+// One line of the closing sheet: a shortcut, and whether Shift is held — the
+// same keys with Shift do a different job and earn their own line.
+export type Summary = { keys: ActionId; withShift?: boolean };
+
+// A course is a shelf of chapters with a name and a reason to take it. The
+// list screen shows nothing else, because there is nothing else to decide on.
+export type Course = {
+  title: string;
+  blurb: string;
+  chapters: Chapter[];
+  // What the closing sheet lists, in the order it should read — which is not
+  // the order the chapters teach in: erasing a word comes last in the course
+  // but belongs beside the selecting it saves you from. Written out rather
+  // than gathered from the steps, because the sheet is the author's summary of
+  // the course and not an index of it.
+  summary: Summary[];
+};
+
+const textChapters: Chapter[] = [
   {
     title: "chapter1.title",
     steps: [
@@ -175,5 +193,34 @@ export const chapters: Chapter[] = [
       { say: "chapter5.dropLine", expectGone: "chapter5.extra", done: "chapter5.dropLineDone" },
       { say: "chapter5.closing" },
     ],
+  },
+];
+
+// Plain Delete is not listed: on its own it erases the selection, which nobody
+// needs told.
+const textSummary: Summary[] = [
+  { keys: "moveLeft" },
+  { keys: "moveUp" },
+  { keys: "moveWordLeft" },
+  { keys: "lineStart" },
+  { keys: "documentStart" },
+  { keys: "moveLeft", withShift: true },
+  { keys: "moveWordLeft", withShift: true },
+  { keys: "lineStart", withShift: true },
+  { keys: "selectAll" },
+  { keys: "deleteWordLeft" },
+  { keys: "copy" },
+  { keys: "cut" },
+  { keys: "paste" },
+  { keys: "undo" },
+  { keys: "redo" },
+];
+
+export const courses: Course[] = [
+  {
+    title: "course.text.title",
+    blurb: "course.text.blurb",
+    chapters: textChapters,
+    summary: textSummary,
   },
 ];

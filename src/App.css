@@ -64,13 +64,27 @@ button:focus-visible {
   padding: 0 28px;
 }
 
+/* The way back to the list, and only once there is a list to go back to. */
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
   font-size: 16px;
   font-weight: 720;
   letter-spacing: -0.02em;
+  text-align: left;
+}
+
+.brand:not(:disabled) {
+  cursor: pointer;
+}
+
+.brand:disabled .brand__mark {
+  box-shadow: none;
 }
 
 .brand__mark {
@@ -153,6 +167,9 @@ button:focus-visible {
   background: #2a3138;
 }
 
+/* A column rather than named rows: off the lesson screens the chapter bar and
+   the step dots have nothing to draw, and a flex column lets them vanish
+   without the panel sliding into the row above. */
 .workspace {
   display: flex;
   flex-direction: column;
@@ -164,6 +181,7 @@ button:focus-visible {
 }
 
 .editor-panel {
+  position: relative;
   display: grid;
   min-height: 0;
   flex: 1;
@@ -505,3 +523,150 @@ button:focus-visible {
   height: 5px;
   background: #6d64ad;
 }
+
+/* The contents page of a book, not a row of web cards: a number, a title set
+   in the document's own face, and what it covers. */
+.course-list {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.course-card {
+  position: relative;
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  padding: 13px 4px 15px 48px;
+  scroll-margin: 12px;
+  border: 0;
+  border-bottom: 1px solid #ddd8ca;
+  color: var(--paper-ink);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.course-list li:last-child .course-card {
+  border-bottom: 0;
+}
+
+/* The picked row carries the focus, so its own ring would double up with the
+   mark it already shows. */
+.course-card:focus-visible {
+  outline: none;
+}
+
+/* A rule down the left edge marks the row, the way a finger holds a place. */
+.course-card::before {
+  position: absolute;
+  border-radius: 999px;
+  background: transparent;
+  content: "";
+  inset: 13px auto 15px 0;
+  width: 3px;
+  transition: background 160ms ease;
+}
+
+.course-card[aria-current="true"]::before,
+.course-card:hover::before {
+  background: var(--accent);
+}
+
+.course-card__index {
+  position: absolute;
+  top: 13px;
+  left: 16px;
+  color: #b6b2a4;
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 24px;
+}
+
+.course-card__title {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+.course-card__blurb {
+  max-width: 68ch;
+  color: #5c6159;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* Bounded by the page rather than by its own content: the page clips to its
+   rounded corners, so a summary too long for a short window has to scroll
+   inside itself instead of being quietly cut off at the bottom. */
+.finish {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}
+
+/* Two columns filled top to bottom, in the order the course taught them. One
+   column would not fit the panel; three would squeeze the names. */
+.finish__sheet {
+  display: grid;
+  grid-auto-flow: column;
+  /* Sized by what each column holds, not split down the middle: the movement
+     names are long and the editing ones are short, and an even split wrapped
+     the left column while the right one sat half empty. */
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  gap: 6px 32px;
+  margin: 0;
+  align-content: start;
+  justify-content: space-between;
+}
+
+.finish__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.finish__row dt {
+  min-width: 0;
+  color: #4b5049;
+  font-size: 13px;
+}
+
+.finish__row dd {
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ↑ and ↓ are narrower glyphs than ← and →, so a floor keeps the four caps
+   looking like four of the same key. */
+.finish__row .key-cap {
+  min-width: 30px;
+  text-align: center;
+}
+
+/* On paper a cap is printed, not lit: dark ink on a light key, the way a
+   manual would set it. */
+.document-canvas .key-cap {
+  border-color: #cdc8ba;
+  color: #33372f;
+  background: #fff;
+  font-size: 12px;
+}
+
+.document-canvas .key-combo__plus {
+  color: #9aa093;
+}
+
+/* Without a course open there are no steps to walk, so the arrows that walk
+   them are not drawn and the narrator takes the full width. */
+.narration--plain {
+  grid-template-columns: minmax(0, 1fr);
+}
+

@@ -3,9 +3,43 @@ import { Trans, useTranslation } from "react-i18next";
 import { changeLanguage, type Language } from "./i18n";
 import { initialPlatform, platforms, type LessonPlatform } from "./platform";
 import { comboFor, comboParts, comboShort, keysOf, matches, type ActionId, type Combo } from "./actions";
-import { chapters } from "./chapters";
+import { courses, type Course, type Step } from "./courses";
 import Keyboard from "./Keyboard";
 import "./App.css";
+
+// Stands in wherever no step is running — the course list, the closing screen.
+// A null step would mean a guard on every line that reads one; an empty one
+// simply asks for nothing.
+const noStep: Step = { say: "" };
+
+// Movement keys come in opposite pairs. On the summary sheet a pair is one
+// entry, not two nearly identical ones: a course that teaches "a word left" has
+// taught "a word right" in the same breath.
+const opposite: Record<string, string> = {
+  ArrowLeft: "ArrowRight",
+  ArrowRight: "ArrowLeft",
+  ArrowUp: "ArrowDown",
+  ArrowDown: "ArrowUp",
+  Home: "End",
+  End: "Home",
+};
+
+const axes = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+
+// The course's own summary, drawn in the legends of the platform on screen.
+const summarise = (course: Course, currentPlatform: LessonPlatform) =>
+  course.summary.map(({ keys, withShift }) => {
+    const base = comboFor(keys, currentPlatform);
+    const combo = withShift ? { ...base, shift: true } : base;
+    // One direction implies the other, so a movement and its opposite share a
+    // line: a course that teaches "a word left" has taught "a word right".
+    const codes = opposite[combo.code] ? [combo.code, opposite[combo.code]] : [combo.code];
+    return {
+      label: `action.${keys}${withShift ? "Shift" : ""}`,
+      mods: comboParts(combo, currentPlatform).slice(0, -1),
+      codes: codes.sort((a, b) => axes.indexOf(a) - axes.indexOf(b)),
+    };
+  });
 
 // Drawn rather than typed: −, □ and ✕ are wildly different sizes in a font,
 // and the close glyph in particular comes out tiny next to the others.
@@ -39,6 +73,12 @@ function App() {
   const { t, i18n } = useTranslation();
   const [currentPlatform, setCurrentPlatform] = useState<LessonPlatform>(initialPlatform);
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
+  // Which course the chapter and step below belong to, and whether the list is
+  // covering it. Kept apart so stepping out to the list and back in returns to
+  // the same course rather than looking like a switch to a different one.
+  const [listOpen, setListOpen] = useState(true);
+  const [courseIndex, setCourseIndex] = useState(0);
+  const [pickedCourse, setPickedCourse] = useState(0);
   const [chapterIndex, setChapterIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [draft, setDraft] = useState("");
@@ -46,12 +86,17 @@ function App() {
   const [caret, setCaret] = useState(0);
   const [done, setDone] = useState(0);
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const cardRef = useRef<HTMLButtonElement>(null);
   const currentLanguage: Language = i18n.resolvedLanguage === "ru" ? "ru" : "en";
 
   const isMac = currentPlatform === "macos";
   const [showHint, setShowHint] = useState(false);
-  const chapter = chapters[chapterIndex];
-  const step = chapter.steps[stepIndex];
+  const course = listOpen ? null : courses[courseIndex];
+  // One past the last chapter is the closing screen: walking off the end of a
+  // course is the same move as walking off the end of a chapter.
+  const finished = course !== null && chapterIndex >= course.chapters.length;
+  const chapter = course && !finished ? course.chapters[chapterIndex] : null;
+  const step = chapter?.steps[stepIndex] ?? noStep;
 
   // Selecting is the familiar movement with Shift held, so the step says so
   // rather than the table carrying a second copy of every entry.
@@ -78,29 +123,68 @@ function App() {
     Boolean(step.expectCaretAfter);
   // Lit only while the step is waiting: a key shown a step early gets pressed
   // early, and then the learner is asked to press it again.
-  const hintedKeys =
+  const nextCombo = comboFor("nextStep", currentPlatform);
+  const lessonKeys =
     step.keys && asked && !satisfied
-      ? new Set([
-          ...keysOf(comboOf(step.keys)),
-          ...(step.keysAlt ? keysOf(comboOf(step.keysAlt)) : []),
-        ])
-      : undefined;
+      ? [...keysOf(comboOf(step.keys)), ...(step.keysAlt ? keysOf(comboOf(step.keysAlt)) : [])]
+      : [];
+  // Off the lesson screens the app's own mechanic is what needs teaching, so
+  // the keyboard lights the keys that drive whatever is on screen.
+  const hintedKeys = course
+    ? finished
+      ? new Set(keysOf(nextCombo))
+      : lessonKeys.length
+        ? new Set(lessonKeys)
+        : undefined
+    : new Set([
+        ...keysOf(comboFor("moveUp", currentPlatform)),
+        ...keysOf(comboFor("moveDown", currentPlatform)),
+        ...keysOf(nextCombo),
+      ]);
 
   // The document only changes on the steps that say so; the rest inherit it.
-  const documentKey = chapter.steps.slice(0, stepIndex + 1).reverse().find((s) => s.document)?.document;
+  const documentKey = chapter?.steps.slice(0, stepIndex + 1).reverse().find((s) => s.document)?.document;
   const documentText = documentKey ? t(documentKey) : "";
 
-  // Stepping past either end of a chapter moves to the next or previous one.
+  // Leaving drops the course back to the top of its current chapter. The step
+  // number could be kept, but the practice document could not: it is retyped
+  // from the chapter's own text, so any step that expects an edited document —
+  // a word cut, something on the clipboard — would be unreachable.
+  const toList = () => {
+    if (finished) setChapterIndex(0);
+    setStepIndex(0);
+    setListOpen(true);
+    setDone(0);
+  };
+
+  // Only a different course starts from the beginning; the one just left
+  // resumes at the top of the chapter it was left in.
+  const openCourse = (index: number) => {
+    if (index !== courseIndex) {
+      setChapterIndex(0);
+      setStepIndex(0);
+    }
+    setPickedCourse(index);
+    setCourseIndex(index);
+    setListOpen(false);
+    setDone(0);
+  };
+
+  // Stepping past either end of a chapter moves to the next or previous one,
+  // and past either end of the course, out of it.
   const goTo = (index: number) => {
+    if (!course || !chapter) return;
     setDone(0);
     if (index < 0) {
-      if (chapterIndex === 0) return;
+      if (chapterIndex === 0) {
+        toList();
+        return;
+      }
       setChapterIndex(chapterIndex - 1);
-      setStepIndex(chapters[chapterIndex - 1].steps.length - 1);
+      setStepIndex(course.chapters[chapterIndex - 1].steps.length - 1);
       return;
     }
     if (index >= chapter.steps.length) {
-      if (chapterIndex === chapters.length - 1) return;
       setChapterIndex(chapterIndex + 1);
       setStepIndex(0);
       return;
@@ -122,14 +206,44 @@ function App() {
         return next;
       });
 
+      // Enter goes deeper and Escape comes back out, everywhere: into a course
+      // and on to the next step, back a step and out of the course. One rule,
+      // so the app can be driven before any of it has been explained.
+      const goes = matches(event, nextCombo);
+      const backs = matches(event, comboFor("prevStep", currentPlatform));
+
+      // The list is the course's own first lesson: the keys that pick a course
+      // are the arrows the course itself starts by teaching.
+      if (!course) {
+        if (matches(event, comboFor("moveUp", currentPlatform))) {
+          event.preventDefault();
+          setPickedCourse((index) => Math.max(0, index - 1));
+        } else if (matches(event, comboFor("moveDown", currentPlatform))) {
+          event.preventDefault();
+          setPickedCourse((index) => Math.min(courses.length - 1, index + 1));
+        } else if (goes) {
+          event.preventDefault();
+          openCourse(pickedCourse);
+        }
+        return;
+      }
+
+      if (finished) {
+        if (goes || backs) {
+          event.preventDefault();
+          toList();
+        }
+        return;
+      }
+
       // Enter would otherwise break the line in the practice document.
-      if (matches(event, comboFor("nextStep", currentPlatform))) {
+      if (goes) {
         event.preventDefault();
         goTo(stepIndex + 1);
         return;
       }
 
-      if (matches(event, comboFor("prevStep", currentPlatform))) {
+      if (backs) {
         event.preventDefault();
         goTo(stepIndex - 1);
         return;
@@ -151,7 +265,7 @@ function App() {
     };
     const releaseAll = () => setPressedKeys(new Set());
 
-    const refocus = () => editorRef.current?.focus();
+    const refocus = () => (course ? editorRef.current : cardRef.current)?.focus();
 
     window.addEventListener("keydown", press);
     window.addEventListener("keyup", release);
@@ -163,7 +277,7 @@ function App() {
       window.removeEventListener("blur", releaseAll);
       window.removeEventListener("focus", refocus);
     };
-  }, [chapterIndex, currentPlatform, expected, needed, step, stepIndex]);
+  }, [chapterIndex, course, currentPlatform, expected, finished, needed, pickedCourse, step, stepIndex]);
 
   // A small helper, not a cage: a step that asks for a keystroke takes the
   // focus back, but the learner is free to click away at any time.
@@ -171,16 +285,22 @@ function App() {
     if (asked) editorRef.current?.focus();
   }, [asked, chapterIndex, stepIndex]);
 
+  // The picked card carries the focus, so the arrows and Tab agree with each
+  // other and a screen reader is told what the arrows just did.
+  useEffect(() => {
+    if (!course) cardRef.current?.focus();
+  }, [course, pickedCourse]);
+
   // The very first screen already carries a document, a narrator and a
   // keyboard; the mechanic waits until the learner has read the rest.
   useEffect(() => {
-    if (stepIndex !== 0) {
+    if (!course || finished || stepIndex !== 0) {
       setShowHint(false);
       return;
     }
     const timer = setTimeout(() => setShowHint(true), 10000);
     return () => clearTimeout(timer);
-  }, [stepIndex]);
+  }, [course, finished, stepIndex]);
 
   // A new chapter types its document out rather than swapping it silently, so
   // the change of exercise is impossible to miss.
@@ -218,7 +338,8 @@ function App() {
     return () => clearInterval(timer);
   }, [currentLanguage, documentText]);
 
-  const nextCombo = comboFor("nextStep", currentPlatform);
+  const sheet = finished && course ? summarise(course, currentPlatform) : [];
+
   // Finishing a drill has to read as an answer, not as the same sentence with
   // its counter quietly removed.
   const succeeded = asked && satisfied && Boolean(step.done);
@@ -227,10 +348,16 @@ function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div className="brand">
+        <button
+          aria-label={t("courses.back")}
+          className="brand"
+          disabled={!course}
+          onClick={toList}
+          type="button"
+        >
           <span className="brand__mark" aria-hidden="true">C</span>
           <span>Coldkey</span>
-        </div>
+        </button>
 
         <div className="platform-tabs" role="radiogroup" aria-label={t("platform.label")}>
           {platforms.map(({ id, label }) => (
@@ -275,11 +402,14 @@ function App() {
               {isMac && <><span /><span /><span /></>}
             </div>
             <span>
-              {t("documentTitle", { current: chapterIndex + 1, title: t(chapter.title) })}
+              {chapter
+                ? t("documentTitle", { current: chapterIndex + 1, title: t(chapter.title) })
+                : t(finished ? "finish.title" : "courses.title")}
             </span>
             <div aria-hidden="true" className="window-controls window-controls--pc">
               {!isMac && pcWindowControls.map((glyph, index) => <span key={index}>{glyph}</span>)}
             </div>
+
           </div>
           <div className="document-canvas">
             {/* One bar for the whole course, drawn along the top edge of the page
@@ -287,70 +417,132 @@ function App() {
                 own loading. A segment per chapter, a tick per step: two separate
                 paginations cost a band of height each and made you read your
                 position in two places. */}
-            <div
-              aria-label={t("progress", { current: chapterIndex + 1, total: chapters.length })}
-              className="course-progress"
-              role="group"
-            >
-              {chapters.map((item, index) => (
-                <div className="course-progress__chapter" key={item.title}>
-                  {item.steps.map((_, at) => (
+            {course && chapter && (
+              <div
+                aria-label={t("progress", { current: chapterIndex + 1, total: course.chapters.length })}
+                className="course-progress"
+                role="group"
+              >
+                {course.chapters.map((item, index) => (
+                  <div className="course-progress__chapter" key={item.title}>
+                    {item.steps.map((_, at) => (
+                      <button
+                        aria-current={index === chapterIndex && at === stepIndex}
+                        aria-label={`${t("documentTitle", { current: index + 1, title: t(item.title) })} — ${t("step.stepOf", { current: at + 1, total: item.steps.length })}`}
+                        className="course-progress__step"
+                        data-state={
+                          index < chapterIndex || (index === chapterIndex && at < stepIndex)
+                            ? "done"
+                            : index === chapterIndex && at === stepIndex
+                              ? "current"
+                              : "todo"
+                        }
+                        key={at}
+                        onClick={() => {
+                          setChapterIndex(index);
+                          setStepIndex(at);
+                          setDone(0);
+                        }}
+                        onMouseDown={keepFocus}
+                        title={t(item.title)}
+                        type="button"
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+            {!finished && (
+              <div className="document-canvas__label">
+                {chapter ? t("editor.section") : t("courses.label")}
+              </div>
+            )}
+
+            {chapter && (
+              <textarea
+                aria-label={t("editor.cursor")}
+                autoCorrect="off"
+                key={`${currentLanguage}-${documentKey}`}
+                onInput={(event) => {
+                  setDraft(event.currentTarget.value);
+                  setCaret(event.currentTarget.selectionStart);
+                }}
+                onKeyUp={(event) => setCaret(event.currentTarget.selectionStart)}
+                onSelect={(event) => setCaret(event.currentTarget.selectionStart)}
+                ref={editorRef}
+                spellCheck={false}
+              />
+            )}
+
+            {!course && (
+              <ul className="course-list">
+                {courses.map((item, index) => (
+                  <li key={item.title}>
                     <button
-                      aria-current={index === chapterIndex && at === stepIndex}
-                      aria-label={`${t("documentTitle", { current: index + 1, title: t(item.title) })} — ${t("step.stepOf", { current: at + 1, total: item.steps.length })}`}
-                      className="course-progress__step"
-                      data-state={
-                        index < chapterIndex || (index === chapterIndex && at < stepIndex)
-                          ? "done"
-                          : index === chapterIndex && at === stepIndex
-                            ? "current"
-                            : "todo"
-                      }
-                      key={at}
-                      onClick={() => {
-                        setChapterIndex(index);
-                        setStepIndex(at);
-                        setDone(0);
-                      }}
-                      onMouseDown={keepFocus}
-                      title={t(item.title)}
+                      aria-current={index === pickedCourse}
+                      className="course-card"
+                      onClick={() => openCourse(index)}
+                      onFocus={() => setPickedCourse(index)}
+                      ref={index === pickedCourse ? cardRef : undefined}
                       type="button"
-                    />
+                    >
+                      <span aria-hidden="true" className="course-card__index">{index + 1}</span>
+                      <span className="course-card__title">{t(item.title)}</span>
+                      <span className="course-card__blurb">{t(item.blurb)}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {finished && (
+              <div className="finish">
+                <dl
+                  className="finish__sheet"
+                  style={{ gridTemplateRows: `repeat(${Math.ceil(sheet.length / 2)}, auto)` }}
+                >
+                  {sheet.map(({ label, mods, codes }) => (
+                    <div className="finish__row" key={label}>
+                      <dt>{t(label)}</dt>
+                      <dd>
+                        <span className="key-combo">
+                          {[...mods, ...codes].map((part, index) => (
+                            <span key={part}>
+                              {/* Between the modifiers and the key, but not between
+                                  the two directions of one movement. */}
+                              {index > 0 && index <= mods.length && (
+                                <span className="key-combo__plus">+</span>
+                              )}
+                              <kbd className="key-cap">
+                                {index < mods.length ? part : comboParts({ code: part }, currentPlatform)[0]}
+                              </kbd>
+                            </span>
+                          ))}
+                        </span>
+                      </dd>
+                    </div>
                   ))}
-                </div>
-              ))}
-            </div>
-            <div className="document-canvas__label">{t("editor.section")}</div>
-            <textarea
-              aria-label={t("editor.cursor")}
-              autoCorrect="off"
-              key={`${currentLanguage}-${documentKey}`}
-              onInput={(event) => {
-                setDraft(event.currentTarget.value);
-                setCaret(event.currentTarget.selectionStart);
-              }}
-              onKeyUp={(event) => setCaret(event.currentTarget.selectionStart)}
-              onSelect={(event) => setCaret(event.currentTarget.selectionStart)}
-              ref={editorRef}
-              spellCheck={false}
-            />
+                </dl>
+              </div>
+            )}
           </div>
         </section>
 
-        <div className="narration">
-          <button
-            aria-label={t("step.back")}
-            className="narration__step"
-            disabled={chapterIndex === 0 && stepIndex === 0}
-            onClick={() => goTo(stepIndex - 1)}
-            onMouseDown={keepFocus}
-            type="button"
-          >
-            ←
-            <kbd>{comboShort(comboFor("prevStep", currentPlatform), currentPlatform)}</kbd>
-          </button>
+        <div className={chapter ? "narration" : "narration narration--plain"}>
+          {chapter && (
+            <button
+              aria-label={t("step.back")}
+              className="narration__step"
+              onClick={() => goTo(stepIndex - 1)}
+              onMouseDown={keepFocus}
+              type="button"
+            >
+              ←
+              <kbd>{comboShort(comboFor("prevStep", currentPlatform), currentPlatform)}</kbd>
+            </button>
+          )}
 
-          <div className="narration__body" data-state={succeeded ? "done" : "asking"}>
+          <div className="narration__body" data-state={succeeded || finished ? "done" : "asking"}>
             <p aria-live="polite">
               {succeeded && <span aria-hidden="true" className="narration__tick">✓</span>}
               <Trans
@@ -365,8 +557,11 @@ function App() {
                   ) : (
                     <span />
                   ),
+                  up: <KeyCombo combo={comboFor("moveUp", currentPlatform)} currentPlatform={currentPlatform} />,
+                  down: <KeyCombo combo={comboFor("moveDown", currentPlatform)} currentPlatform={currentPlatform} />,
+                  enter: <KeyCombo combo={nextCombo} currentPlatform={currentPlatform} />,
                 }}
-                i18nKey={line}
+                i18nKey={chapter ? line : finished ? "finish.say" : "courses.say"}
               />
             </p>
             {needed > 0 && !satisfied && (
@@ -374,27 +569,29 @@ function App() {
             )}
           </div>
 
-          <button
-            aria-label={t("step.next")}
-            className="narration__step narration__step--next"
-            data-ready={satisfied}
-            disabled={chapterIndex === chapters.length - 1 && stepIndex === chapter.steps.length - 1}
-            onClick={() => goTo(stepIndex + 1)}
-            onMouseDown={keepFocus}
-            type="button"
-          >
-            →
-            <kbd>{comboShort(nextCombo, currentPlatform)}</kbd>
-            {showHint && (
-              <span className="narration__hint">
-                <Trans
-                  components={{ keys: <KeyCombo combo={nextCombo} currentPlatform={currentPlatform} /> }}
-                  i18nKey="step.continueHint"
-                />
-              </span>
-            )}
-          </button>
+          {chapter && (
+            <button
+              aria-label={t("step.next")}
+              className="narration__step narration__step--next"
+              data-ready={satisfied}
+              onClick={() => goTo(stepIndex + 1)}
+              onMouseDown={keepFocus}
+              type="button"
+            >
+              →
+              <kbd>{comboShort(nextCombo, currentPlatform)}</kbd>
+              {showHint && (
+                <span className="narration__hint">
+                  <Trans
+                    components={{ keys: <KeyCombo combo={nextCombo} currentPlatform={currentPlatform} /> }}
+                    i18nKey="step.continueHint"
+                  />
+                </span>
+              )}
+            </button>
+          )}
         </div>
+
       </main>
 
       <footer className="keyboard-dock">
