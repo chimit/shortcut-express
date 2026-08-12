@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { comboFor, comboParts } from "./actions";
+import { comboFor, comboParts, keyName } from "./actions";
 import { type Course } from "./courses";
 import { type LessonPlatform } from "./platform";
 
@@ -55,7 +55,7 @@ function Summary({ course, currentPlatform }: { course: Course; currentPlatform:
                       <span className="key-combo__plus">+</span>
                     )}
                     <kbd className="key-cap">
-                      {index < mods.length ? part : comboParts({ code: part }, currentPlatform)[0]}
+                      {index < mods.length ? part : keyName(part)}
                     </kbd>
                   </span>
                 ))}
