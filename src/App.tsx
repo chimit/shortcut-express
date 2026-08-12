@@ -3,43 +3,17 @@ import { Trans, useTranslation } from "react-i18next";
 import { changeLanguage, type Language } from "./i18n";
 import { initialPlatform, platforms, type LessonPlatform } from "./platform";
 import { comboFor, comboParts, comboShort, keysOf, matches, type ActionId, type Combo } from "./actions";
-import { courses, type Course, type Step } from "./courses";
+import { courses, type Step } from "./courses";
+import CourseList from "./CourseList";
 import Keyboard from "./Keyboard";
+import Summary from "./Summary";
+import { useDocument } from "./useDocument";
 import "./App.css";
 
 // Stands in wherever no step is running — the course list, the closing screen.
 // A null step would mean a guard on every line that reads one; an empty one
 // simply asks for nothing.
 const noStep: Step = { say: "" };
-
-// Movement keys come in opposite pairs. On the summary sheet a pair is one
-// entry, not two nearly identical ones: a course that teaches "a word left" has
-// taught "a word right" in the same breath.
-const opposite: Record<string, string> = {
-  ArrowLeft: "ArrowRight",
-  ArrowRight: "ArrowLeft",
-  ArrowUp: "ArrowDown",
-  ArrowDown: "ArrowUp",
-  Home: "End",
-  End: "Home",
-};
-
-const axes = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
-
-// The course's own summary, drawn in the legends of the platform on screen.
-const summarise = (course: Course, currentPlatform: LessonPlatform) =>
-  course.summary.map(({ keys, withShift }) => {
-    const base = comboFor(keys, currentPlatform);
-    const combo = withShift ? { ...base, shift: true } : base;
-    // One direction implies the other, so a movement and its opposite share a
-    // line: a course that teaches "a word left" has taught "a word right".
-    const codes = opposite[combo.code] ? [combo.code, opposite[combo.code]] : [combo.code];
-    return {
-      label: `action.${keys}${withShift ? "Shift" : ""}`,
-      mods: comboParts(combo, currentPlatform).slice(0, -1),
-      codes: codes.sort((a, b) => axes.indexOf(a) - axes.indexOf(b)),
-    };
-  });
 
 // Drawn rather than typed: −, □ and ✕ are wildly different sizes in a font,
 // and the close glyph in particular comes out tiny next to the others.
@@ -81,9 +55,6 @@ function App() {
   const [pickedCourse, setPickedCourse] = useState(0);
   const [chapterIndex, setChapterIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
-  const [draft, setDraft] = useState("");
-  const [docReady, setDocReady] = useState(false);
-  const [caret, setCaret] = useState(0);
   const [done, setDone] = useState(0);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const cardRef = useRef<HTMLButtonElement>(null);
@@ -98,6 +69,10 @@ function App() {
   const chapter = course && !finished ? course.chapters[chapterIndex] : null;
   const step = chapter?.steps[stepIndex] ?? noStep;
 
+  // The document only changes on the steps that say so; the rest inherit it.
+  const documentKey = chapter?.steps.slice(0, stepIndex + 1).reverse().find((s) => s.document)?.document;
+  const { draft, caret, ready: docReady, follow } = useDocument(editorRef, documentKey ? t(documentKey) : "");
+
   // Selecting is the familiar movement with Shift held, so the step says so
   // rather than the table carrying a second copy of every entry.
   const comboOf = (action: ActionId): Combo => {
@@ -105,8 +80,7 @@ function App() {
     return step.withShift ? { ...base, shift: true } : base;
   };
 
-  const expected = step.expect ? [step.expect].flat() : [];
-  const needed = expected.length ? (step.repeat ?? 1) : 0;
+  const needed = step.expect ? (step.repeat ?? 1) : 0;
   // "Gone" is only meaningful once the text that should go is actually there:
   // a document still being typed out contains nothing at all.
   const textDone =
@@ -142,9 +116,6 @@ function App() {
         ...keysOf(nextCombo),
       ]);
 
-  // The document only changes on the steps that say so; the rest inherit it.
-  const documentKey = chapter?.steps.slice(0, stepIndex + 1).reverse().find((s) => s.document)?.document;
-  const documentText = documentKey ? t(documentKey) : "";
 
   // Leaving drops the course back to the top of its current chapter. The step
   // number could be kept, but the practice document could not: it is retyped
@@ -250,9 +221,11 @@ function App() {
       }
 
       // Credit is given for performing the shortcut, not for the caret landing
-      // somewhere: the point of the lesson is the technique.
-      if (expected.some((action) => matches(event, comboOf(action)))) {
-        setDone((count) => Math.min(count + 1, needed));
+      // somewhere: the point of the lesson is the technique. A step naming
+      // several accepts any of them: a round trip counts either way.
+      const wanted = step.expect ? [step.expect].flat() : [];
+      if (wanted.some((action) => matches(event, comboOf(action)))) {
+        setDone((count) => Math.min(count + 1, step.repeat ?? 1));
       }
     };
     const release = (event: KeyboardEvent) => {
@@ -277,7 +250,7 @@ function App() {
       window.removeEventListener("blur", releaseAll);
       window.removeEventListener("focus", refocus);
     };
-  }, [chapterIndex, course, currentPlatform, expected, finished, needed, pickedCourse, step, stepIndex]);
+  }, [chapterIndex, course, currentPlatform, finished, pickedCourse, step, stepIndex]);
 
   // A small helper, not a cage: a step that asks for a keystroke takes the
   // focus back, but the learner is free to click away at any time.
@@ -302,43 +275,6 @@ function App() {
     return () => clearTimeout(timer);
   }, [course, finished, stepIndex]);
 
-  // A new chapter types its document out rather than swapping it silently, so
-  // the change of exercise is impossible to miss.
-  useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const land = (text: string) => {
-      editor.value = text;
-      editor.focus();
-      editor.setSelectionRange(text.length, text.length);
-      setDraft(text);
-      setCaret(text.length);
-      setDocReady(true);
-    };
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      land(documentText);
-      return;
-    }
-
-    let shown = 0;
-    land("");
-    setDocReady(false);
-    const timer = setInterval(() => {
-      shown = Math.min(shown + 1, documentText.length);
-      editor.value = documentText.slice(0, shown);
-      editor.setSelectionRange(shown, shown);
-      if (shown === documentText.length) {
-        clearInterval(timer);
-        setDraft(documentText);
-        setDocReady(true);
-      }
-    }, 14);
-    return () => clearInterval(timer);
-  }, [currentLanguage, documentText]);
-
-  const sheet = finished && course ? summarise(course, currentPlatform) : [];
 
   // Finishing a drill has to read as an answer, not as the same sentence with
   // its counter quietly removed.
@@ -463,68 +399,24 @@ function App() {
                 aria-label={t("editor.cursor")}
                 autoCorrect="off"
                 key={`${currentLanguage}-${documentKey}`}
-                onInput={(event) => {
-                  setDraft(event.currentTarget.value);
-                  setCaret(event.currentTarget.selectionStart);
-                }}
-                onKeyUp={(event) => setCaret(event.currentTarget.selectionStart)}
-                onSelect={(event) => setCaret(event.currentTarget.selectionStart)}
+                onInput={follow}
+                onKeyUp={follow}
+                onSelect={follow}
                 ref={editorRef}
                 spellCheck={false}
               />
             )}
 
             {!course && (
-              <ul className="course-list">
-                {courses.map((item, index) => (
-                  <li key={item.title}>
-                    <button
-                      aria-current={index === pickedCourse}
-                      className="course-card"
-                      onClick={() => openCourse(index)}
-                      onFocus={() => setPickedCourse(index)}
-                      ref={index === pickedCourse ? cardRef : undefined}
-                      type="button"
-                    >
-                      <span aria-hidden="true" className="course-card__index">{index + 1}</span>
-                      <span className="course-card__title">{t(item.title)}</span>
-                      <span className="course-card__blurb">{t(item.blurb)}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <CourseList
+                cardRef={cardRef}
+                onOpen={openCourse}
+                onPick={setPickedCourse}
+                picked={pickedCourse}
+              />
             )}
 
-            {finished && (
-              <div className="finish">
-                <dl
-                  className="finish__sheet"
-                  style={{ gridTemplateRows: `repeat(${Math.ceil(sheet.length / 2)}, auto)` }}
-                >
-                  {sheet.map(({ label, mods, codes }) => (
-                    <div className="finish__row" key={label}>
-                      <dt>{t(label)}</dt>
-                      <dd>
-                        <span className="key-combo">
-                          {[...mods, ...codes].map((part, index) => (
-                            <span key={part}>
-                              {/* Between the modifiers and the key, but not between
-                                  the two directions of one movement. */}
-                              {index > 0 && index <= mods.length && (
-                                <span className="key-combo__plus">+</span>
-                              )}
-                              <kbd className="key-cap">
-                                {index < mods.length ? part : comboParts({ code: part }, currentPlatform)[0]}
-                              </kbd>
-                            </span>
-                          ))}
-                        </span>
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
+            {finished && course && <Summary course={course} currentPlatform={currentPlatform} />}
           </div>
         </section>
 
