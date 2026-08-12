@@ -121,14 +121,16 @@ button:focus-visible {
 .platform-tabs__tab,
 .language-switch__button {
   position: relative;
-  padding: 4px 7px;
+  padding: 4px 10px;
   border: 0;
-  border-radius: 4px;
-  color: #69737b;
+  border-radius: 5px;
+  color: #93a3b0;
   background: transparent;
   cursor: pointer;
-  font-size: 9px;
-  font-weight: 750;
+  /* Set once and then ignored, but it still has to be read once — and by
+     someone who came here because small print is hard. */
+  font-size: 12px;
+  font-weight: 700;
   transition: color 140ms ease, background 140ms ease;
 }
 
@@ -140,10 +142,10 @@ button:focus-visible {
 
 .platform-tabs__current {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 3px;
-  height: 3px;
+  top: 4px;
+  right: 4px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: #77d6ae;
 }
