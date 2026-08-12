@@ -6,6 +6,7 @@
    guessed separately drifting apart. */
 .keyboard {
   --key-pitch: 48px;
+  --key-gap: 5px;
   --key-font: 11px;
   display: flex;
   width: min(var(--keyboard-width), calc(100vw - 32px));
@@ -36,17 +37,17 @@
   min-width: 0;
   flex: 1;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--key-gap);
 }
 
 /* Navigation cluster and arrows, three units wide, aligned with the rows
    of the main block. */
 .keyboard__side {
   display: grid;
-  width: calc(3 * var(--key-pitch) - 5px);
+  width: calc(3 * var(--key-pitch) - var(--key-gap));
   flex: none;
   grid-template-rows: repeat(5, minmax(0, 1fr));
-  gap: 5px;
+  gap: var(--key-gap);
 }
 
 .nav-keys {
@@ -54,7 +55,7 @@
   min-height: 0;
   grid-row: 1 / span 2;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
+  gap: var(--key-gap);
 }
 
 /* "Page Up" and "Page Down" are printed in full, wrapping onto a second line. */
@@ -75,7 +76,7 @@
   display: flex;
   min-height: 0;
   flex: 1;
-  gap: 5px;
+  gap: var(--key-gap);
 }
 
 .keyboard__key {
@@ -84,7 +85,7 @@
   min-width: 0;
   /* A cap n units wide swallows the n-1 gaps it spans, so columns line up
      across rows even though the rows hold different numbers of caps. */
-  flex: var(--key-width) var(--key-width) calc((var(--key-width) - 1) * 5px);
+  flex: var(--key-width) var(--key-width) calc((var(--key-width) - 1) * var(--key-gap));
   place-items: center;
   overflow: hidden;
   border: 1px solid #2f373e;
@@ -198,10 +199,11 @@
 .arrow-keys {
   display: grid;
   min-width: 0;
-  flex: 3 3 10px;
+  /* Three units wide, so it swallows the two gaps it spans. */
+  flex: 3 3 calc(2 * var(--key-gap));
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 5px;
+  gap: var(--key-gap);
 }
 
 .arrow-keys .keyboard__key {
