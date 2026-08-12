@@ -141,7 +141,9 @@ export const keysOf = (combo: Combo): string[] => [
   combo.code,
 ];
 
-const modifierNames: Record<LessonPlatform, Record<string, string>> = {
+type Modifier = "ctrl" | "alt" | "shift" | "meta";
+
+const modifierNames: Record<LessonPlatform, Record<Modifier, string>> = {
   macos: { ctrl: "Control", alt: "Option", shift: "Shift", meta: "Command" },
   windows: { ctrl: "Ctrl", alt: "Alt", shift: "Shift", meta: "Win" },
   linux: { ctrl: "Ctrl", alt: "Alt", shift: "Shift", meta: "Super" },
@@ -177,7 +179,7 @@ export const comboParts = (combo: Combo, currentPlatform: LessonPlatform): strin
   ];
 };
 
-const shortModifiers: Record<LessonPlatform, Record<string, string>> = {
+const shortModifiers: Record<LessonPlatform, Record<Modifier, string>> = {
   macos: { ctrl: "⌃", alt: "⌥", shift: "⇧", meta: "⌘" },
   windows: { ctrl: "Ctrl", alt: "Alt", shift: "⇧", meta: "⊞" },
   linux: { ctrl: "Ctrl", alt: "Alt", shift: "⇧", meta: "❖" },
