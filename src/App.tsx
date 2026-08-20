@@ -8,6 +8,7 @@ import CourseList from "./CourseList";
 import Keyboard from "./Keyboard";
 import Summary from "./Summary";
 import { useDocument } from "./useDocument";
+import iconUrl from "../design/icon.svg";
 import "./App.css";
 
 // Stands in wherever no step is running — the course list, the closing screen.
@@ -102,14 +103,18 @@ function App() {
     step.keys && asked && !satisfied
       ? [...keysOf(comboOf(step.keys)), ...(step.keysAlt ? keysOf(comboOf(step.keysAlt)) : [])]
       : [];
-  // Off the lesson screens the app's own mechanic is what needs teaching, so
-  // the keyboard lights the keys that drive whatever is on screen.
+  // Whatever the learner is meant to press is lit on the keyboard itself: the
+  // step's own shortcut while it is still waiting, Enter once it is not. The
+  // way on is a keypress, so it is taught on the keys rather than on a button.
+  // Off the lesson screens the same rule lights whatever drives the screen.
   const hintedKeys = course
     ? finished
       ? new Set(keysOf(nextCombo))
       : lessonKeys.length
         ? new Set(lessonKeys)
-        : undefined
+        : satisfied
+          ? new Set(keysOf(nextCombo))
+          : undefined
     : new Set([
         ...keysOf(comboFor("moveUp", currentPlatform)),
         ...keysOf(comboFor("moveDown", currentPlatform)),
@@ -291,7 +296,8 @@ function App() {
           onClick={toList}
           type="button"
         >
-          <span className="brand__mark" aria-hidden="true">C</span>
+          {/* The application icon itself, at header size. */}
+          <img alt="" className="brand__mark" src={iconUrl} />
           <span>Coldkey</span>
         </button>
 
@@ -420,11 +426,11 @@ function App() {
           </div>
         </section>
 
-        <div className={chapter ? "narration" : "narration narration--plain"}>
+        <div className={chapter ? "narration" : "narration narration--no-nav"}>
           {chapter && (
             <button
               aria-label={t("step.back")}
-              className="narration__step"
+              className="narration__nav"
               onClick={() => goTo(stepIndex - 1)}
               onMouseDown={keepFocus}
               type="button"
@@ -464,8 +470,7 @@ function App() {
           {chapter && (
             <button
               aria-label={t("step.next")}
-              className="narration__step narration__step--next"
-              data-ready={satisfied}
+              className="narration__nav narration__nav--next"
               onClick={() => goTo(stepIndex + 1)}
               onMouseDown={keepFocus}
               type="button"

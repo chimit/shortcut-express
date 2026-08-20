@@ -95,7 +95,7 @@
   font-size: var(--key-font);
   font-weight: 620;
   white-space: nowrap;
-  transition: color 90ms linear, background 90ms linear, border-color 90ms linear;
+  transition: background 90ms linear, border-color 90ms linear;
 }
 
 /* Two-line caps: the symbol above the label. Centred unless the cap is wide
@@ -174,26 +174,41 @@
 }
 
 /* Breathing rather than merely lit: a steady glow blends into the board, a
-   slow pulse reads as "press me". */
+   slow pulse reads as "press me". The cap itself never moves or changes — the
+   halo around it is the only thing that breathes, so the legend stays at full
+   strength in every frame. Overflow is released for the halo alone; the cap's
+   own legend has always fitted inside it. */
+.keyboard__key--hinted,
+.keyboard__key--pressed {
+  border-color: var(--accent-rim);
+  background: var(--accent);
+}
+
 .keyboard__key--hinted {
-  border-color: var(--accent);
-  color: #fff;
-  background: var(--accent-soft);
+  position: relative;
+  overflow: visible;
+}
+
+.keyboard__key--hinted::before {
+  position: absolute;
+  border: 2px solid var(--accent-rim);
+  border-radius: 9px;
+  content: "";
+  inset: -4px;
   animation: key-breathe 1.6s ease-in-out infinite;
 }
 
+/* Only opacity moves: one colour fading in and out, never one blue crossing
+   into another. */
 @keyframes key-breathe {
-  50% {
-    border-color: #cfc7ff;
-    background: #4a3f8f;
-    box-shadow: 0 0 0 4px rgba(139, 124, 246, 0.18);
+  from,
+  to {
+    opacity: 0;
   }
-}
 
-.keyboard__key--pressed {
-  border-color: #6457cd;
-  color: #fff;
-  background: #6457cd;
+  50% {
+    opacity: 1;
+  }
 }
 
 .arrow-keys {

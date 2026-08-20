@@ -1,18 +1,33 @@
 :root {
   font-family: Inter, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
-  color: #f3f5f4;
-  background: #0d1013;
+  --canvas: #0d1013;
+  --surface: #1b222a;
+  --line: #3d4854;
+  --muted: #8e989f;
+  --text: #f3f5f4;
+  color: var(--text);
+  background: var(--canvas);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --canvas: #0d1013;
-  --surface: #151a1f;
-  --surface-raised: #1a2026;
-  --line: #2a3138;
-  --muted: #8e989f;
-  --text: #f3f5f4;
-  --accent: #8b7cf6;
-  --accent-soft: #2c2850;
+  /* One accent for both grounds. It is dark enough to mark warm paper and
+     saturated enough to burn on near-black, so the caret, the progress rail,
+     the bookmark and every lit cap are all this one colour. */
+  --accent: #0a84ff;
+  /* Its light pair, and only ever an edge: the rim of a lit cap, the ring that
+     breathes around a hinted key, the focus outline. */
+  --accent-rim: #95c5f8;
+  /* Success is emerald rather than green: it keeps the blue's coolness instead
+     of pulling towards yellow beside it. Three steps do the work of a panel, a
+     cap sitting on that panel, and the marks on both — each colour is the next
+     one's outline, so the nesting needs no fourth. */
+  --ok-bg: #064e3b;
+  --ok-line: #047857;
+  --ok-mark: #6ee7b7;
+  /* The hint is the one thing that must not read as part of the interface, so
+     it inverts: a light plate on a dark shell, the way a help tag does. */
+  --tip-plate: #f1f5f9;
+  --tip-ink: #0f172a;
   --paper: #f2efe8;
   --paper-ink: #242824;
 }
@@ -42,7 +57,7 @@ kbd {
 }
 
 button:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-rim);
   outline-offset: 2px;
 }
 
@@ -53,7 +68,7 @@ button:focus-visible {
   height: 100dvh;
   overflow: hidden;
   background:
-    radial-gradient(circle at 75% 8%, rgba(91, 75, 171, 0.12), transparent 28rem),
+    radial-gradient(circle at 75% 6%, #345462, #34546200 34rem),
     var(--canvas);
 }
 
@@ -83,22 +98,15 @@ button:focus-visible {
   cursor: pointer;
 }
 
-.brand:disabled .brand__mark {
-  box-shadow: none;
-}
-
+/* The application icon file itself, so the header and the app icon can never
+   drift apart. drop-shadow rather than box-shadow: the glow follows the cap,
+   not the transparent box around it — and it is lit by the same light as the
+   shell behind it, so the colour is the one the backdrop's own glow is set in
+   rather than a second glow with opinions of its own. */
 .brand__mark {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  border: 1px solid #9b90f8;
-  border-radius: 9px;
-  color: #fff;
-  background: #6457cd;
-  box-shadow: 0 6px 18px rgba(100, 87, 205, 0.25);
-  font-size: 13px;
-  font-weight: 800;
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 0 8px #345462) drop-shadow(0 0 18px #345462);
 }
 
 /* Both switches are the same control: set once, then ignored for the rest of
@@ -124,7 +132,7 @@ button:focus-visible {
   padding: 4px 10px;
   border: 0;
   border-radius: 5px;
-  color: #93a3b0;
+  color: var(--muted);
   background: transparent;
   cursor: pointer;
   /* Set once and then ignored, but it still has to be read once — and by
@@ -147,7 +155,7 @@ button:focus-visible {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #77d6ae;
+  background: var(--ok-mark);
 }
 
 /* A column rather than named rows: off the lesson screens the chapter bar and
@@ -172,8 +180,11 @@ button:focus-visible {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: var(--surface-raised);
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.18);
+  background: var(--surface);
+  /* No drop shadow: the canvas is all but black, and blackening black shifts
+     it by three or four units. What lifts the window off it is the rim — the
+     border, plus a highlight along the top edge. */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
 .editor-panel__bar {
@@ -182,10 +193,10 @@ button:focus-visible {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 16px;
-  color: #7f8991;
-  background: #171c21;
-  /* A real title bar is quiet: macOS sets its titles at 13px semibold, Windows
-     at 12px regular. Anything louder reads as a heading, not as chrome. */
+  color: var(--muted);
+  /* No surface of its own: the bar and the frame are one piece of chrome. And
+     a real title bar is quiet — macOS sets its titles at 13px semibold,
+     Windows at 12px regular. Anything louder reads as a heading. */
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -202,7 +213,7 @@ button:focus-visible {
   justify-content: flex-end;
   justify-self: end;
   gap: 14px;
-  color: #838d95;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -210,7 +221,7 @@ button:focus-visible {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #3b444c;
+  background: #64748b;
 }
 
 .document-canvas {
@@ -252,6 +263,7 @@ button:focus-visible {
   border: 0;
   color: var(--paper-ink);
   background-color: transparent;
+  /* A hairline cannot win on weight, so it wins on colour. */
   caret-color: var(--accent);
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   font-size: clamp(25px, 3vw, 34px);
@@ -262,8 +274,10 @@ button:focus-visible {
   resize: none;
 }
 
+/* The accent's own hue lifted until the serif still runs 10:1 across it: a
+   band with edges, the way an editor marks a selection, not a wash. */
 .document-canvas textarea::selection {
-  background: rgba(139, 124, 246, 0.3);
+  background: #b9d4fb;
 }
 
 .keyboard-dock {
@@ -312,26 +326,29 @@ button:focus-visible {
   justify-content: center;
   gap: 8px;
   padding: 18px 22px;
-  border: 1px solid #38345d;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--accent-soft);
+  background: var(--surface);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
 .narration__body p {
   margin: 0;
-  color: #e6e3ff;
+  color: var(--text);
   font-size: 17px;
   line-height: 1.45;
 }
 
 .narration__count {
-  color: #a49cdd;
+  color: var(--accent);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
 
-.narration__step {
+/* The two arrows that walk the course. Not a "step" — the steps are the
+   lesson's own, drawn by .course-progress__step. */
+.narration__nav {
   display: grid;
   height: 72px;
   place-items: center;
@@ -345,29 +362,43 @@ button:focus-visible {
   transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
 }
 
-.narration__step:disabled {
+.narration__nav:disabled {
   cursor: default;
   opacity: 0.35;
 }
 
-.narration__step:not(:disabled):hover {
+.narration__nav:not(:disabled):hover {
   color: var(--text);
-  background: var(--surface-raised);
 }
 
-/* Once the step is satisfied the way forward is the loudest thing on screen. */
-/* Taught once, at the very start: the app's own mechanic is a shortcut too. */
+/* The arrow's own legend, and only its own: the hint hanging off the button
+   carries caps of its own, which keep the cap colours. */
+.narration__nav > kbd {
+  color: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+/* Taught once, at the very start: the app's own mechanic is a shortcut too.
+   It hangs off the forward arrow, which anchors it. */
+.narration__nav--next {
+  position: relative;
+}
+
 .narration__hint {
   position: absolute;
   animation: hint-in 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
   bottom: calc(100% + 10px);
   right: 0;
-  padding: 7px 11px;
-  border-radius: 9px;
-  color: #efedff;
-  background: #4c43a0;
-  font-size: 12px;
-  font-weight: 650;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--tip-ink);
+  background: var(--tip-plate);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-size: 12.5px;
+  font-weight: 550;
+  letter-spacing: -0.005em;
   white-space: nowrap;
 }
 
@@ -377,25 +408,8 @@ button:focus-visible {
   right: 22px;
   width: 0;
   border: 5px solid transparent;
-  border-top-color: #4c43a0;
+  border-top-color: var(--tip-plate);
   content: "";
-}
-
-.narration__step--next {
-  position: relative;
-}
-
-.narration__step--next[data-ready="true"]:not(:disabled) {
-  border-color: var(--accent);
-  color: #fff;
-  background: #6457cd;
-}
-
-.narration__step kbd {
-  color: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  opacity: 0.8;
 }
 
 /* A shortcut inside a sentence is drawn as a cap, so it reads as a key rather
@@ -403,18 +417,13 @@ button:focus-visible {
 .key-cap {
   display: inline-block;
   padding: 2px 8px;
-  border: 1px solid #6f66b8;
+  border: 1px solid var(--accent-rim);
   border-radius: 6px;
-  color: #fff;
-  background: #4a4283;
+  color: var(--text);
+  background: var(--accent);
   font-size: 0.9em;
   font-weight: 700;
   white-space: nowrap;
-}
-
-.narration__hint .key-cap {
-  border-color: #7a71c9;
-  background: #5b52ad;
 }
 
 /* Each key of a shortcut gets its own cap; the plus between them is quieter. */
@@ -426,24 +435,24 @@ button:focus-visible {
 
 .key-combo__plus {
   margin-right: 5px;
-  color: #a49cdd;
+  color: var(--accent);
   font-weight: 650;
 }
 
 .narration__tick {
   margin-right: 8px;
-  color: #77d6ae;
+  color: var(--ok-mark);
   font-weight: 800;
 }
 
 .narration__body[data-state="done"] {
-  border-color: #3c6b58;
-  background: #223a33;
+  border-color: var(--ok-line);
+  background: var(--ok-bg);
 }
 
 .narration__body[data-state="done"] .key-cap {
-  border-color: #4e8a71;
-  background: #2f5a4a;
+  border-color: var(--ok-mark);
+  background: var(--ok-line);
 }
 
 @keyframes hint-in {
@@ -485,7 +494,7 @@ button:focus-visible {
 
 .course-progress__step::before {
   position: absolute;
-  background: #e0dbcd;
+  background: rgba(36, 40, 36, 0.16);
   content: "";
   inset: 0 0 auto;
   height: 3px;
@@ -493,7 +502,7 @@ button:focus-visible {
 }
 
 .course-progress__step[data-state="done"]::before {
-  background: #8b7cf6;
+  background: var(--accent);
 }
 
 .course-progress__step[data-state="current"]::before {
@@ -503,7 +512,7 @@ button:focus-visible {
 
 .course-progress__step:hover::before {
   height: 5px;
-  background: #6d64ad;
+  background: var(--accent);
 }
 
 /* The contents page of a book, not a row of web cards: a number, a title set
@@ -648,7 +657,6 @@ button:focus-visible {
 
 /* Without a course open there are no steps to walk, so the arrows that walk
    them are not drawn and the narrator takes the full width. */
-.narration--plain {
+.narration--no-nav {
   grid-template-columns: minmax(0, 1fr);
 }
-
