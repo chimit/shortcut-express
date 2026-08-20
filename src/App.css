@@ -359,7 +359,7 @@ button:focus-visible {
   background: var(--surface);
   cursor: pointer;
   font-size: 19px;
-  transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+  transition: color 140ms ease;
 }
 
 .narration__nav:disabled {
