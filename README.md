@@ -2,7 +2,7 @@
 
 Coldkey is a desktop course that teaches useful keyboard shortcuts to people who still do most things with a mouse. It is not a shortcut reference and does not begin with a quiz. It is an interactive textbook: explain a familiar problem, demonstrate a faster action, guide the learner through it, and only then ask them to practise without help.
 
-The first release focuses on text navigation and editing because these skills are useful in almost every application and provide the largest benefit with the smallest number of shortcuts.
+Coldkey is a shelf of short courses. The first teaches text navigation and editing, because those skills are useful in almost every application and give the largest benefit for the fewest shortcuts. The second teaches the browser, where most people spend most of their day.
 
 ## Who it is for
 
@@ -34,6 +34,8 @@ The main screen is deliberately visual and fits inside the default application w
 - a dark application shell keeps the learning document and keyboard visually prominent;
 - a large, styled document shows text, a clearly visible caret, and selections;
 - a realistic keyboard shows the learner where keys are and highlights presses and suggested combinations;
+- keycap legends are always Latin, whatever language the interface is set to, because every shortcut names a Latin letter and a Cyrillic board would light a cap two rows from the one the sentence just asked for;
+- a course chooses its stage: the practice document, or a browser the application draws itself with tabs, an address bar, find-on-page and history;
 - OS tabs switch between macOS, Windows, and Linux conventions at any time;
 - the current OS is detected automatically but never prevents inspecting another platform;
 - the interface supports English and Russian, with English as the fallback language;
@@ -47,11 +49,10 @@ Browsers are useful for developing the interface, but they cannot reliably own e
 
 Tauri also gives the project normal desktop distribution paths: the macOS App Store, Microsoft Store, Homebrew, downloadable installers from the project website, and Linux packages. Exact packaging and signing work has not started yet.
 
-## MVP course: text without a mouse
+## Course one: text without a mouse
 
-The MVP is one five-chapter foundation course, and all five chapters are
-written. It teaches a compact set of actions that work across text editors,
-browsers, office applications, and design tools.
+A five-chapter foundation course. It teaches a compact set of actions that work
+across text editors, browsers, office applications, and design tools.
 
 Every chapter opens by naming itself and types its practice document out so
 the change of exercise is visible. A new shortcut is never demonstrated once
@@ -97,14 +98,58 @@ swapping a modifier.
 - fix a typo, put two words back in order, delete a line that does not belong;
 - every task is judged by what the document became, not by which key was pressed.
 
+## Course two: the browser without a mouse
+
+Six chapters, taught on a browser the application draws rather than embeds. A
+real browser inside the window would answer the shortcuts itself and the learner
+would never find out which key did it; here every tab that opens and every jump
+the find bar makes happens because the lesson recognised the keystroke.
+
+### Chapter 1 — Tabs
+
+- open a tab, close a tab, and — the one nobody knows — bring back the tab you
+  closed by accident;
+- drill opening and closing until the pair is automatic.
+
+### Chapter 2 — Moving between tabs
+
+- `Ctrl+Tab` and `Ctrl+Shift+Tab`, which are the same on every browser and every
+  system, drilled far enough round the ring to see it wrap;
+- jump straight to a tab by its number, and to the last tab whatever its number.
+
+### Chapter 3 — The address bar
+
+- put the caret in the address bar and find it already selected, so everything
+  the first course taught about typing over a selection applies unchanged;
+- open a site by address, and learn the same box searches when you have none.
+
+### Chapter 4 — Find on the page
+
+- open find-on-page, watch every match light up and get counted;
+- walk forward and back through the matches, then put the bar away.
+
+### Chapter 5 — The page and history
+
+- turn the page a screen at a time instead of reaching for the wheel;
+- reach the top and the bottom with the very shortcuts the first course used for
+  the ends of a text;
+- step back and forward through history, and reload.
+
+### Chapter 6 — The workshop
+
+- five tasks, no keys named and no keys lit;
+- close a tab and bring it back, find a word, tidy up after yourself, step back
+  through history, jump to the last tab.
+
 ## Later courses
 
-After the text course is useful on its own, the curriculum can expand in this order:
+After the two existing courses, the curriculum can expand in this order:
 
 1. **Windows and applications** — close a window, quit an app, switch apps/windows, and understand the difference between closing and quitting.
-2. **Screenshots** — full screen, area, window, clipboard, and the especially fragmented macOS screenshot workflow.
-3. **Browser essentials** — focus the address bar, open/close/reopen tabs, switch tabs, find on page, and reload.
-4. **Application packs** — small, high-value courses for tools such as Figma, contributed and maintained by their users.
+2. **Files and folders** — rename, copy, move and delete, where the platforms genuinely disagree: `Enter` on macOS against `F2` on Windows.
+3. **Dialogs, forms and lists** — Tab between fields, Space to toggle, Enter to accept, Escape to cancel.
+4. **Screenshots** — full screen, area, window, clipboard, and the especially fragmented macOS screenshot workflow.
+5. **Application packs** — small, high-value courses for tools such as Figma, contributed and maintained by their users.
 
 Rare, hard-to-remember shortcuts should not be added merely for completeness. A shortcut belongs in the core curriculum only when it is broadly useful and clearly saves effort.
 
@@ -173,19 +218,21 @@ The Vite-only interface can be opened with `npm run dev`, but native platform an
 
 ## Current status
 
-Coldkey is a working prototype of the whole MVP course. The application shell,
-platform-specific keyboard, responsive no-scroll layout, English/Russian
-localization, native text editing, caret and selection feedback, physical-key
-highlighting, the lesson engine, and all five chapters exist.
+Two courses are written and playable end to end, reached from a course list with
+its own keyboard navigation. The application shell, platform-specific keyboard,
+responsive no-scroll layout, English/Russian localization, native text editing,
+caret and selection feedback, physical-key highlighting, the lesson engine, the
+drawn browser, and the closing summary sheet all exist.
 
-A step is judged either by the shortcut performed or by what the document
-became — corrected text, deleted text, an empty document, or the caret arriving
-somewhere — never by both at once.
+A course declares the stage it is taught on: the sheet of paper the first course
+writes on, or the browser the second one drives. A step is judged by the
+shortcut performed, by what the learner wrote, or by both — the workshop asks
+for a shortcut and a word together.
 
 Still to be built: progress storage, content-pack loading, packaging and
-signing, and automated checks. The lesson data model now has five real chapters
-behind it, which is the evidence a content-pack schema should be designed
-from.
+signing, and automated checks. The lesson data model now has eleven real
+chapters and two stages behind it, which is the evidence a content-pack schema
+should be designed from.
 
 ## Open-source status
 
