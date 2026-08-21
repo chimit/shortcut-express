@@ -238,6 +238,12 @@ button:focus-visible {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
 }
 
+/* A browser fills its window edge to edge: the paper's own margin would inset
+   the toolbar, and no browser insets its toolbar. */
+.document-canvas[data-stage="browser"] {
+  padding: 0;
+}
+
 .document-canvas__label {
   margin-bottom: 8px;
   color: #969b96;

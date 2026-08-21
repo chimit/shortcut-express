@@ -12,7 +12,7 @@ export type Combo = {
 // stated once, here, per platform — so a lesson is written once and reads
 // natively everywhere. Note that lineStart is a combination on macOS and a
 // dedicated key on Windows: the same objective, genuinely different technique.
-export const actions = {
+const actions = {
   moveLeft: {
     macos: { code: "ArrowLeft" },
     windows: { code: "ArrowLeft" },
@@ -105,6 +105,107 @@ export const actions = {
     windows: { ctrl: true, code: "KeyY" },
     linux: { ctrl: true, code: "KeyY" },
   },
+  // --- The browser ---------------------------------------------------------
+  // Tabs. The three that matter, in the order a day goes: open one, close it,
+  // and — the one nobody knows — bring back the one you closed by accident.
+  newTab: {
+    macos: { meta: true, code: "KeyT" },
+    windows: { ctrl: true, code: "KeyT" },
+    linux: { ctrl: true, code: "KeyT" },
+  },
+  closeTab: {
+    macos: { meta: true, code: "KeyW" },
+    windows: { ctrl: true, code: "KeyW" },
+    linux: { ctrl: true, code: "KeyW" },
+  },
+  reopenTab: {
+    macos: { meta: true, shift: true, code: "KeyT" },
+    windows: { ctrl: true, shift: true, code: "KeyT" },
+    linux: { ctrl: true, shift: true, code: "KeyT" },
+  },
+  // Control, not Command, even on a Mac: this pair is the same on every
+  // browser and every system, which is rare enough to be worth teaching first.
+  nextTab: {
+    macos: { ctrl: true, code: "Tab" },
+    windows: { ctrl: true, code: "Tab" },
+    linux: { ctrl: true, code: "Tab" },
+  },
+  prevTab: {
+    macos: { ctrl: true, shift: true, code: "Tab" },
+    windows: { ctrl: true, shift: true, code: "Tab" },
+    linux: { ctrl: true, shift: true, code: "Tab" },
+  },
+  // The digits count tabs from the left. One of them is enough to teach the
+  // rule; the nine is the exception worth its own line, being always the last
+  // tab however many there are.
+  thirdTab: {
+    macos: { meta: true, code: "Digit3" },
+    windows: { ctrl: true, code: "Digit3" },
+    linux: { ctrl: true, code: "Digit3" },
+  },
+  lastTab: {
+    macos: { meta: true, code: "Digit9" },
+    windows: { ctrl: true, code: "Digit9" },
+    linux: { ctrl: true, code: "Digit9" },
+  },
+  addressBar: {
+    macos: { meta: true, code: "KeyL" },
+    windows: { ctrl: true, code: "KeyL" },
+    linux: { ctrl: true, code: "KeyL" },
+  },
+  findOnPage: {
+    macos: { meta: true, code: "KeyF" },
+    windows: { ctrl: true, code: "KeyF" },
+    linux: { ctrl: true, code: "KeyF" },
+  },
+  // Enter and Escape again, under the names the find bar gives them. The same
+  // keys the app itself runs on, which the lesson has to borrow back for a
+  // step: see how the step's own expectation outranks the navigation.
+  findNext: {
+    macos: { code: "Enter" },
+    windows: { code: "Enter" },
+    linux: { code: "Enter" },
+  },
+  findPrev: {
+    macos: { shift: true, code: "Enter" },
+    windows: { shift: true, code: "Enter" },
+    linux: { shift: true, code: "Enter" },
+  },
+  closeFind: {
+    macos: { code: "Escape" },
+    windows: { code: "Escape" },
+    linux: { code: "Escape" },
+  },
+  // A screenful at a time, the way a reader turns pages.
+  pageDown: {
+    macos: { code: "Space" },
+    windows: { code: "Space" },
+    linux: { code: "Space" },
+  },
+  pageUp: {
+    macos: { shift: true, code: "Space" },
+    windows: { shift: true, code: "Space" },
+    linux: { shift: true, code: "Space" },
+  },
+  // History. Apple's browsers agree on the brackets; everywhere else the
+  // arrows carry it, which is the same shape as the Home/End split already
+  // taught for the ends of a line.
+  historyBack: {
+    macos: { meta: true, code: "BracketLeft" },
+    windows: { alt: true, code: "ArrowLeft" },
+    linux: { alt: true, code: "ArrowLeft" },
+  },
+  historyForward: {
+    macos: { meta: true, code: "BracketRight" },
+    windows: { alt: true, code: "ArrowRight" },
+    linux: { alt: true, code: "ArrowRight" },
+  },
+  reload: {
+    macos: { meta: true, code: "KeyR" },
+    windows: { ctrl: true, code: "KeyR" },
+    linux: { ctrl: true, code: "KeyR" },
+  },
+
   // Plain Enter continues, the way a chat window sends. A newline in the
   // practice document is Shift+Enter, which no lesson claims.
   nextStep: {
@@ -155,20 +256,21 @@ const codeNames: Record<string, string> = {
   ArrowUp: "↑",
   ArrowDown: "↓",
   Home: "Home",
+  Tab: "Tab",
+  Space: "Space",
+  BracketLeft: "[",
+  BracketRight: "]",
   Enter: "Enter",
   Escape: "Esc",
   Backspace: "Delete",
-  KeyA: "A",
-  KeyC: "C",
-  KeyV: "V",
-  KeyX: "X",
-  KeyY: "Y",
-  KeyZ: "Z",
 };
 
 // What is printed on one keycap. Codes we have no legend for are shown as
 // they come: a key nobody has named is still a key.
-export const keyName = (code: string): string => codeNames[code] ?? code;
+export const keyName = (code: string): string =>
+  // Every letter and digit prints itself, so only the keys whose legend is not
+  // their code need naming above.
+  codeNames[code] ?? code.replace(/^(Key|Digit)/, "");
 
 // One entry per physical key, so a sentence can draw each of them as its own
 // cap. Spelled out, because a beginner reads "Option", not "⌥".

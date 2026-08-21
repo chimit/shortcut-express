@@ -13,18 +13,20 @@ const opposite: Record<string, string> = {
   ArrowDown: "ArrowUp",
   Home: "End",
   End: "Home",
+  BracketLeft: "BracketRight",
+  BracketRight: "BracketLeft",
 };
 
-const axes = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+const axes = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "BracketLeft", "BracketRight"];
 
 // The course's own summary, drawn in the legends of the platform on screen.
 const rowsOf = (course: Course, currentPlatform: LessonPlatform) =>
-  course.summary.map(({ keys, withShift }) => {
+  course.summary.map(({ keys, withShift, label }) => {
     const base = comboFor(keys, currentPlatform);
     const combo = withShift ? { ...base, shift: true } : base;
     const codes = opposite[combo.code] ? [combo.code, opposite[combo.code]] : [combo.code];
     return {
-      label: `action.${keys}${withShift ? "Shift" : ""}`,
+      label: label ?? `action.${keys}${withShift ? "Shift" : ""}`,
       mods: comboParts(combo, currentPlatform).slice(0, -1),
       codes: codes.sort((a, b) => axes.indexOf(a) - axes.indexOf(b)),
     };

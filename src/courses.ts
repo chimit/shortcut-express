@@ -1,4 +1,5 @@
 import type { ActionId } from "./actions";
+import type { Scene } from "./useBrowser";
 
 export type Step = {
   // Translation key for the line the narrator says. <keys/> in it is filled
@@ -6,6 +7,9 @@ export type Step = {
   say: string;
   // Loads text into the practice document. Only the steps that change it.
   document?: string;
+  // The same thing for a course taught in the browser: what the tabs and the
+  // history start out as. A chapter about the digits needs tabs to count.
+  scene?: Scene;
   // What <keys/> prints, and what lights up on the keyboard — but only while
   // the step is actually waiting for input. Lighting a key on the step before
   // makes the learner press it early and then repeat themselves.
@@ -40,14 +44,21 @@ export type Step = {
   done?: string;
 };
 
-export type Chapter = {
+type Chapter = {
   title: string;
   steps: Step[];
 };
 
 // One line of the closing sheet: a shortcut, and whether Shift is held — the
 // same keys with Shift do a different job and earn their own line.
-export type Summary = { keys: ActionId; withShift?: boolean };
+export type Summary = {
+  keys: ActionId;
+  withShift?: boolean;
+  // Overrides the name taken from the action. Two courses can reach for the
+  // same shortcut and mean different things by it: the ends of a text in one,
+  // the ends of a page in the other.
+  label?: string;
+};
 
 // A course is a shelf of chapters with a name and a reason to take it. The
 // list screen shows nothing else, because there is nothing else to decide on.
@@ -55,6 +66,9 @@ export type Course = {
   title: string;
   blurb: string;
   chapters: Chapter[];
+  // What the course is taught on. Absent means the sheet of paper the first
+  // course is written on.
+  stage?: "browser";
   // What the closing sheet lists, in the order it should read — which is not
   // the order the chapters teach in: erasing a word comes last in the course
   // but belongs beside the selecting it saves you from. Written out rather
@@ -216,11 +230,168 @@ const textSummary: Summary[] = [
   { keys: "redo" },
 ];
 
+const browserChapters: Chapter[] = [
+  {
+    title: "browser1.title",
+    steps: [
+      { say: "browser1.intro", scene: "start" },
+      { say: "browser1.open", keys: "newTab", expect: "newTab", done: "browser1.openDone" },
+      // The new tab arrives with the caret already in the address bar. Saying
+      // so now is what makes the third chapter feel like a shortcut rather than
+      // a new thing to remember.
+      { say: "browser1.whereItWent" },
+      { say: "browser1.openMore", keys: "newTab", expect: "newTab", repeat: 2, done: "browser1.openMoreDone" },
+      { say: "browser1.close", keys: "closeTab", expect: "closeTab", done: "browser1.closeDone" },
+      { say: "browser1.oops" },
+      // The reason anyone finishes this course.
+      { say: "browser1.reopen", keys: "reopenTab", expect: "reopenTab", done: "browser1.reopenDone" },
+      {
+        say: "browser1.drill",
+        keys: "newTab",
+        keysAlt: "closeTab",
+        expect: ["newTab", "closeTab"],
+        repeat: 6,
+        done: "browser1.drillDone",
+      },
+      { say: "browser1.closing" },
+    ],
+  },
+  {
+    title: "browser2.title",
+    steps: [
+      { say: "browser2.intro", scene: "many" },
+      // Control and not Command, even on a Mac. Worth a step of its own,
+      // because everything else in this course follows the other rule.
+      {
+        say: "browser2.next",
+        keys: "nextTab",
+        expect: "nextTab",
+        // As many presses as there are tabs, so the wrap round to the first one
+        // actually happens rather than being described.
+        repeat: 5,
+        done: "browser2.nextDone",
+      },
+      { say: "browser2.prev", keys: "prevTab", expect: "prevTab", done: "browser2.prevDone" },
+      {
+        say: "browser2.drill",
+        keys: "nextTab",
+        keysAlt: "prevTab",
+        expect: ["nextTab", "prevTab"],
+        repeat: 6,
+        done: "browser2.drillDone",
+      },
+      { say: "browser2.digits" },
+      { say: "browser2.third", keys: "thirdTab", expect: "thirdTab", done: "browser2.thirdDone" },
+      // Nine is not the ninth tab, it is the last one however many there are.
+      { say: "browser2.last", keys: "lastTab", expect: "lastTab", done: "browser2.lastDone" },
+      { say: "browser2.closing" },
+    ],
+  },
+  {
+    title: "browser3.title",
+    steps: [
+      { say: "browser3.intro", scene: "start" },
+      { say: "browser3.focus", keys: "addressBar", expect: "addressBar", done: "browser3.focusDone" },
+      // The address arrives selected, so everything the first course taught
+      // about typing over a selection applies here unchanged.
+      { say: "browser3.selected" },
+      { say: "browser3.type", expectText: "browser3.query", done: "browser3.typeDone" },
+      { say: "browser3.arrived" },
+      { say: "browser3.tip" },
+      { say: "browser3.again", keys: "addressBar", expect: "addressBar", done: "browser3.againDone" },
+      { say: "browser3.closing" },
+    ],
+  },
+  {
+    title: "browser4.title",
+    steps: [
+      { say: "browser4.intro", scene: "start" },
+      { say: "browser4.open", keys: "findOnPage", expect: "findOnPage", done: "browser4.openDone" },
+      { say: "browser4.type", expectText: "browser4.term", done: "browser4.typeDone" },
+      // Enter belongs to the find bar for as long as this step is unfinished:
+      // the step's own expectation outranks the app's own navigation, and hands
+      // the key back the moment the drill is done.
+      { say: "browser4.next", keys: "findNext", expect: "findNext", repeat: 3, done: "browser4.nextDone" },
+      { say: "browser4.prev", keys: "findPrev", expect: "findPrev", repeat: 3, done: "browser4.prevDone" },
+      { say: "browser4.close", keys: "closeFind", expect: "closeFind", done: "browser4.closeDone" },
+      { say: "browser4.closing" },
+    ],
+  },
+  {
+    title: "browser5.title",
+    steps: [
+      { say: "browser5.intro", scene: "visited" },
+      { say: "browser5.down", keys: "pageDown", expect: "pageDown", repeat: 3, done: "browser5.downDone" },
+      { say: "browser5.up", keys: "pageUp", expect: "pageUp", repeat: 3, done: "browser5.upDone" },
+      // The same shortcut as the ends of a text in the first course, doing the
+      // same job on a page. Nothing new to learn, which is the point.
+      {
+        say: "browser5.ends",
+        keys: "documentEnd",
+        keysAlt: "documentStart",
+        expect: ["documentStart", "documentEnd"],
+        repeat: 4,
+        done: "browser5.endsDone",
+      },
+      { say: "browser5.back", keys: "historyBack", expect: "historyBack", done: "browser5.backDone" },
+      { say: "browser5.forward", keys: "historyForward", expect: "historyForward", done: "browser5.forwardDone" },
+      { say: "browser5.reload", keys: "reload", expect: "reload", done: "browser5.reloadDone" },
+      { say: "browser5.closing" },
+    ],
+  },
+  {
+    // The workshop again: the goal is stated, the shortcut is not.
+    title: "browser6.title",
+    steps: [
+      { say: "browser6.intro", scene: "many" },
+      { say: "browser6.close", expect: "closeTab", done: "browser6.closeDone" },
+      { say: "browser6.oops", expect: "reopenTab", done: "browser6.oopsDone" },
+      // Two requirements at once: open the find bar and type the word. Between
+      // them they describe the task without naming either key. It has to come
+      // while the article is still the tab in front, so it runs before the two
+      // tasks that move off it.
+      { say: "browser6.find", expect: "findOnPage", expectText: "browser6.term", done: "browser6.findDone" },
+      // Leaving the find bar open would sit over the two tasks that follow,
+      // and putting a tool away is part of using it.
+      { say: "browser6.tidy", expect: "closeFind", done: "browser6.tidyDone" },
+      { say: "browser6.back", expect: "historyBack", done: "browser6.backDone" },
+      { say: "browser6.jump", expect: "lastTab", done: "browser6.jumpDone" },
+      { say: "browser6.closing" },
+    ],
+  },
+];
+
+const browserSummary: Summary[] = [
+  { keys: "newTab" },
+  { keys: "closeTab" },
+  { keys: "reopenTab" },
+  { keys: "nextTab" },
+  { keys: "prevTab" },
+  { keys: "thirdTab" },
+  { keys: "lastTab" },
+  { keys: "addressBar" },
+  { keys: "findOnPage" },
+  { keys: "findNext" },
+  { keys: "findPrev" },
+  { keys: "pageDown" },
+  { keys: "pageUp" },
+  { keys: "documentStart", label: "action.pageEnds" },
+  { keys: "historyBack" },
+  { keys: "reload" },
+];
+
 export const courses: Course[] = [
   {
     title: "course.text.title",
     blurb: "course.text.blurb",
     chapters: textChapters,
     summary: textSummary,
+  },
+  {
+    title: "course.browser.title",
+    blurb: "course.browser.blurb",
+    chapters: browserChapters,
+    stage: "browser",
+    summary: browserSummary,
   },
 ];

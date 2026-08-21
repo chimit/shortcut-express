@@ -4,9 +4,11 @@ import { changeLanguage, type Language } from "./i18n";
 import { initialPlatform, platforms, type LessonPlatform } from "./platform";
 import { comboFor, comboParts, comboShort, keysOf, matches, type ActionId, type Combo } from "./actions";
 import { courses, type Step } from "./courses";
+import Browser, { BrowserTabs } from "./Browser";
 import CourseList from "./CourseList";
 import Keyboard from "./Keyboard";
 import Summary from "./Summary";
+import { useBrowser, browserKeys } from "./useBrowser";
 import { useDocument } from "./useDocument";
 import iconUrl from "../design/icon.svg";
 import "./App.css";
@@ -72,7 +74,19 @@ function App() {
 
   // The document only changes on the steps that say so; the rest inherit it.
   const documentKey = chapter?.steps.slice(0, stepIndex + 1).reverse().find((s) => s.document)?.document;
-  const { draft, caret, ready: docReady, follow } = useDocument(editorRef, documentKey ? t(documentKey) : "");
+  const { draft: written, caret, ready: docReady, follow } = useDocument(editorRef, documentKey ? t(documentKey) : "");
+
+  // The second stage: a drawn browser instead of a sheet of paper. Its scene
+  // is inherited down the steps exactly as the practice document is.
+  const isBrowser = course?.stage === "browser";
+  const scene = chapter?.steps.slice(0, stepIndex + 1).reverse().find((s) => s.scene)?.scene ?? "start";
+  const browser = useBrowser(scene, chapterIndex);
+  // What has been typed into whichever field the browser has the caret in.
+  // The document and the address bar are both "what the learner wrote", so one
+  // name covers them and every expectation below reads the same either way.
+  const [typed, setTyped] = useState("");
+  useEffect(() => setTyped(""), [chapterIndex, stepIndex]);
+  const draft = isBrowser ? typed : written;
 
   // Selecting is the familiar movement with Shift held, so the step says so
   // rather than the table carrying a second copy of every entry.
@@ -82,6 +96,13 @@ function App() {
   };
 
   const needed = step.expect ? (step.repeat ?? 1) : 0;
+  // The listener has to know how far the drill has got without being rebuilt
+  // on every press: a step that borrows Enter must hand it back the moment its
+  // count is full. Writing the ref during the render is deliberate — it mirrors
+  // a value the render already has, and is only ever read from an event, which
+  // runs after the commit.
+  const doneRef = useRef(0);
+  doneRef.current = done;
   // "Gone" is only meaningful once the text that should go is actually there:
   // a document still being typed out contains nothing at all.
   const textDone =
@@ -168,6 +189,16 @@ function App() {
     setStepIndex(index);
   };
 
+  // Back, from the closing screen: into the last step of the last chapter,
+  // because that is what "the step before this screen" means.
+  const toLastStep = () => {
+    if (!course) return;
+    const last = course.chapters.length - 1;
+    setChapterIndex(last);
+    setStepIndex(course.chapters[last].steps.length - 1);
+    setDone(0);
+  };
+
   // The caret only blinks while the document has focus, and a lesson about the
   // caret cannot afford to lose it. Chrome buttons therefore decline the focus
   // a mouse click would hand them; keyboard users still reach them with Tab.
@@ -204,11 +235,68 @@ function App() {
         return;
       }
 
+      // The closing screen keeps the same two meanings as everywhere else:
+      // Enter goes on — here, out to the shelf — and Escape goes back, which
+      // from the last screen of a course means back into its last step.
       if (finished) {
-        if (goes || backs) {
+        if (goes) {
           event.preventDefault();
           toList();
+        } else if (backs) {
+          event.preventDefault();
+          toLastStep();
         }
+        return;
+      }
+
+      // Credit is given for performing the shortcut, not for the caret landing
+      // somewhere: the point of the lesson is the technique. A step naming
+      // several accepts any of them: a round trip counts either way.
+      const wanted = step.expect ? [step.expect].flat() : [];
+      // A step may ask for the very keys the app is driven by — the find bar
+      // moves on Enter and closes on Escape. While such a step is still
+      // counting, the key belongs to it; once the count is full the key goes
+      // back to meaning "on" and "back", so the way out is the way in.
+      const claimed = doneRef.current < needed && wanted.some((action) => matches(event, comboOf(action)));
+
+      // The drawn browser answers its own shortcuts whatever the step is
+      // asking for: a learner who tries Command+T out of turn should still see
+      // a tab open. Only these keys are held back from the page — Command+Q is
+      // not among them, and must always go on quitting the app.
+      if (isBrowser) {
+        const typing = document.activeElement instanceof HTMLInputElement;
+        // Every digit jumps to its tab, not only the two the chapter stops to
+        // name: a learner who tries the five in between should see it work. The
+        // modifier is borrowed from the table rather than restated here.
+        const digit = comboFor("thirdTab", currentPlatform);
+        if (/^Digit[1-9]$/.test(event.code) && matches(event, { ...digit, code: event.code })) {
+          event.preventDefault();
+          browser.jump(Number(event.code.slice(5)));
+        } else {
+          const acted = browserKeys.find(
+            (action) =>
+              // Space is a space while a field has the caret, not a page down.
+              !(typing && (action === "pageDown" || action === "pageUp")) &&
+              // Enter and Escape are the app's own. The browser gets them only
+              // while a step is asking for them: once the find drill is done,
+              // Enter goes back to meaning "next step" and stops quietly walking
+              // the page on to another match behind the lesson's back.
+              !((goes || backs) && !claimed) &&
+              matches(event, comboFor(action, currentPlatform)),
+          );
+          if (acted) {
+            event.preventDefault();
+            browser.handle(acted);
+          }
+        }
+      }
+
+      // Nothing is prevented here: the keystroke still has to do its own work.
+      // An arrow that was counted must also move the caret, and Enter in the
+      // find bar has already been held back above. The return is what keeps the
+      // lesson from also treating it as "next step".
+      if (claimed) {
+        setDone((count) => Math.min(count + 1, step.repeat ?? 1));
         return;
       }
 
@@ -225,10 +313,6 @@ function App() {
         return;
       }
 
-      // Credit is given for performing the shortcut, not for the caret landing
-      // somewhere: the point of the lesson is the technique. A step naming
-      // several accepts any of them: a round trip counts either way.
-      const wanted = step.expect ? [step.expect].flat() : [];
       if (wanted.some((action) => matches(event, comboOf(action)))) {
         setDone((count) => Math.min(count + 1, step.repeat ?? 1));
       }
@@ -243,7 +327,13 @@ function App() {
     };
     const releaseAll = () => setPressedKeys(new Set());
 
-    const refocus = () => (course ? editorRef.current : cardRef.current)?.focus();
+    // Coming back to the window should recover a lost caret, not move one that
+    // is still where the learner left it — in the address bar, or in the find
+    // field, or on a chrome button they tabbed to on purpose.
+    const refocus = () => {
+      if (document.activeElement && document.activeElement !== document.body) return;
+      (course ? (isBrowser ? browser.pageRef.current : editorRef.current) : cardRef.current)?.focus();
+    };
 
     window.addEventListener("keydown", press);
     window.addEventListener("keyup", release);
@@ -255,7 +345,7 @@ function App() {
       window.removeEventListener("blur", releaseAll);
       window.removeEventListener("focus", refocus);
     };
-  }, [chapterIndex, course, currentPlatform, finished, pickedCourse, step, stepIndex]);
+  }, [browser.handle, browser.jump, browser.pageRef, chapterIndex, course, currentPlatform, finished, isBrowser, needed, pickedCourse, step, stepIndex]);
 
   // A small helper, not a cage: a step that asks for a keystroke takes the
   // focus back, but the learner is free to click away at any time.
@@ -343,17 +433,21 @@ function App() {
             <div aria-hidden="true" className="window-controls">
               {isMac && <><span /><span /><span /></>}
             </div>
-            <span>
-              {chapter
-                ? t("documentTitle", { current: chapterIndex + 1, title: t(chapter.title) })
-                : t(finished ? "finish.title" : "courses.title")}
-            </span>
+            {isBrowser && chapter ? (
+              <BrowserTabs browser={browser} />
+            ) : (
+              <span>
+                {chapter
+                  ? t("documentTitle", { current: chapterIndex + 1, title: t(chapter.title) })
+                  : t(finished ? "finish.title" : "courses.title")}
+              </span>
+            )}
             <div aria-hidden="true" className="window-controls window-controls--pc">
               {!isMac && pcWindowControls.map((glyph, index) => <span key={index}>{glyph}</span>)}
             </div>
 
           </div>
-          <div className="document-canvas">
+          <div className="document-canvas" data-stage={isBrowser && chapter ? "browser" : "paper"}>
             {/* One bar for the whole course, drawn along the top edge of the page
                 itself and clipped by its corners, the way a browser draws its
                 own loading. A segment per chapter, a tick per step: two separate
@@ -394,13 +488,15 @@ function App() {
                 ))}
               </div>
             )}
-            {!finished && (
+            {!finished && !isBrowser && (
               <div className="document-canvas__label">
                 {chapter ? t("editor.section") : t("courses.label")}
               </div>
             )}
 
-            {chapter && (
+            {chapter && isBrowser && <Browser browser={browser} onType={setTyped} />}
+
+            {chapter && !isBrowser && (
               <textarea
                 aria-label={t("editor.cursor")}
                 autoCorrect="off"
@@ -426,12 +522,16 @@ function App() {
           </div>
         </section>
 
-        <div className={chapter ? "narration" : "narration narration--no-nav"}>
-          {chapter && (
+        {/* The two buttons are what Enter and Escape look like. They show
+            wherever those keys do something, which is every screen inside a
+            course — the closing sheet included, where they mean "back into the
+            last step" and "out to the shelf". On the list neither applies. */}
+        <div className={course ? "narration" : "narration narration--no-nav"}>
+          {course && (
             <button
               aria-label={t("step.back")}
               className="narration__nav"
-              onClick={() => goTo(stepIndex - 1)}
+              onClick={finished ? toLastStep : () => goTo(stepIndex - 1)}
               onMouseDown={keepFocus}
               type="button"
             >
@@ -467,11 +567,11 @@ function App() {
             )}
           </div>
 
-          {chapter && (
+          {course && (
             <button
-              aria-label={t("step.next")}
+              aria-label={t(finished ? "courses.back" : "step.next")}
               className="narration__nav narration__nav--next"
-              onClick={() => goTo(stepIndex + 1)}
+              onClick={finished ? toList : () => goTo(stepIndex + 1)}
               onMouseDown={keepFocus}
               type="button"
             >

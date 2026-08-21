@@ -135,6 +135,10 @@
     "text": {
       "title": "Text without a mouse",
       "blurb": "Move through text, select it, edit and undo — without touching the mouse."
+    },
+    "browser": {
+      "title": "The browser without a mouse",
+      "blurb": "Switch tabs, search a page and step back through history — all from the keyboard."
     }
   },
   "finish": {
@@ -156,6 +160,159 @@
     "cut": "Cut",
     "paste": "Paste",
     "undo": "Undo",
-    "redo": "Redo"
+    "redo": "Redo",
+    "newTab": "New tab",
+    "closeTab": "Close the tab",
+    "reopenTab": "Bring back a closed tab",
+    "nextTab": "Next tab",
+    "prevTab": "Previous tab",
+    "thirdTab": "Tab by number",
+    "lastTab": "Last tab",
+    "addressBar": "Caret to the address bar",
+    "findOnPage": "Find on the page",
+    "findNext": "Next match",
+    "pageDown": "One screen down",
+    "pageEnds": "Top or bottom of the page",
+    "historyBack": "Back and forward through history",
+    "reload": "Reload the page",
+    "findPrev": "Previous match",
+    "pageUp": "One screen up"
+  },
+  "browser": {
+    "tabsLabel": "Tabs",
+    "addressLabel": "Address bar",
+    "addressPlaceholder": "Search or enter an address",
+    "findLabel": "Find on page",
+    "findPlaceholder": "Find on page",
+    "hitOf": "{{current}} of {{total}}",
+    "noHits": "no matches",
+    "blank": {
+      "title": "New tab",
+      "body": "An empty tab. The caret is already in the address bar — start typing."
+    },
+    "page0": {
+      "title": "The city on foot",
+      "url": "onfoot.com/mornings",
+      "body": "Morning in a city begins before the city itself wakes up. The pavements have already been swept, and the first coffee shops are only now switching on their signs.\n\nLeave half an hour early and walk at least part of the way, and the city turns into something else entirely. It turns out there is a passage between two streets you have known for years, and behind it a small garden you have driven past a thousand times without once seeing it.\n\nOn foot you see everything at eye level. Not whole facades, but doors, signs, steps, cats in windows. It is not the city on the postcards, but it is the one you remember.\n\nMorning suits this best. By day the city hurries and shoves; by evening it is tired. In the morning it has not yet decided what sort of day to have, and so it is unusually friendly.\n\nStart small: get off one stop early. One stop is ten minutes on foot and a piece of the city you knew nothing about.\n\nA month later you will know your own city better than in all the years before it, and you will know that morning is the best part of the day.\n\nThe surprising part is that none of it needs planning. No route, no destination, no app to count your steps and congratulate you on them. It is enough to go out and turn the wrong way.\n\nA city is built in layers. The first is the one you drive along: avenues, bridges, junctions. The second is the lanes a car will not fit down. The third is the courtyards, where the washing hangs and other people's bicycles lean. From the third layer a city looks like somebody's home rather than a diagram.\n\nIn winter it works better still. Fewer people, shorter sounds, windows lit earlier. Fifteen minutes in the cold wakes you more thoroughly than any coffee and costs less.\n\nThere is a plainly practical gain too. A walking person thinks better than a sitting one: half the problems you fought with all of yesterday solve themselves between two junctions. It is not mysterious, it is only rhythm.\n\nNot everywhere, of course, and not every day. But if two of your five working days begin with twenty minutes on foot, the difference shows by the end of the second week. And it is not really about health: it is that the morning stops being a commute and becomes part of the day.\n\nTry it tomorrow. Leaving early is hard only the first time — after that the city starts calling, and at some point you notice you are walking not because it is good for you but because it is nicer."
+    },
+    "page1": {
+      "title": "Mail",
+      "url": "mail.com",
+      "body": "No new mail. At last."
+    },
+    "page2": {
+      "title": "Weather",
+      "url": "weather.com",
+      "body": "Clear today, eighteen degrees. Rain expected tomorrow evening."
+    },
+    "page3": {
+      "title": "Search: weather",
+      "url": "search.com/?q=weather",
+      "body": "Weather for the week: clear, then rain, then clear again. As usual."
+    },
+    "page4": {
+      "title": "Recipes",
+      "url": "recipes.com",
+      "body": "Pancakes: flour, an egg, a spoon of sugar. That is all."
+    }
+  },
+  "browser1": {
+    "title": "Tabs",
+    "intro": "Chapter one. This is a browser — where most of the day happens. We start with tabs.",
+    "open": "A new tab opens with <keys/>. Try it.",
+    "openDone": "There it is, right next to the one you were on.",
+    "whereItWent": "Notice: the caret is already in the address bar. The browser is waiting for you to type.",
+    "openMore": "Open a couple more — <keys/>.",
+    "openMoreDone": "Several now. Let us close the spare ones.",
+    "close": "Close the current tab — <keys/>.",
+    "closeDone": "Gone.",
+    "oops": "Now imagine you closed it by accident. And it had a half-written letter in it.",
+    "reopen": "No matter: <keys/> brings back the last tab you closed. Ten of them, if you like.",
+    "reopenDone": "Back again. This one will save your evening some day.",
+    "drill": "Let us make it stick. Open and close tabs — <keys/> and <keysAlt/>.",
+    "drillDone": "Good. Three shortcuts you will use every single day.",
+    "closing": "Tabs are under your fingers now: open one, close one, and — best of all — bring back the one you closed by mistake."
+  },
+  "browser2": {
+    "title": "Moving between tabs",
+    "intro": "Chapter two. There are a lot of tabs now, and the more there are the narrower they get.",
+    "next": "The next tab is <keys/>. Go all the way round.",
+    "nextDone": "You reached the end and came back to the start. Tabs go round in a circle.",
+    "prev": "The other way — <keys/>.",
+    "prevDone": "The same road, walked backwards.",
+    "drill": "Walk up and down: <keys/> and <keysAlt/>.",
+    "drillDone": "Remember this pair: it works the same in every browser on every system.",
+    "digits": "But one at a time is slow. Tabs are numbered from the left, and you can jump straight to any of them.",
+    "third": "To the third tab — <keys/>.",
+    "thirdDone": "Straight there. The digits one to eight all work like that.",
+    "last": "Nine is the odd one out: it is always the last tab, however many there are. Try <keys/>.",
+    "lastDone": "The far right one. Even with twenty tabs open.",
+    "closing": "Tabs no longer need catching with a mouse, however many of them there are."
+  },
+  "browser3": {
+    "title": "The address bar",
+    "intro": "Chapter three. The most frequent mouse click of anybody's day is on the address bar. It need not be.",
+    "focus": "<keys/> — and the caret is in the address.",
+    "focusDone": "There it is. And here is the part that matters...",
+    "selected": "The whole address is selected. Everything the first course taught you about selections holds here: type straight over it, nothing needs erasing.",
+    "type": "Type an address: weather.com",
+    "query": "weather.com",
+    "typeDone": "Good. Now press <enter/> and the browser will open the page.",
+    "arrived": "That is how you open a site whose address you know. But the address bar is a search box too: when you do not know the address, just type what you are after.",
+    "again": "Once more, to make it stick: <keys/>.",
+    "againDone": "That is all there is to it. No more aiming a mouse at the address bar.",
+    "closing": "The address bar needs no mouse any more: one shortcut and you are typing.",
+    "tip": "And two small discoveries. You never need to type www or http:// at the front — the browser fills that in. And case makes no difference: WEATHER.COM, Weather.com and weather.com are the same address."
+  },
+  "browser4": {
+    "title": "Find on the page",
+    "intro": "Chapter four. A long article, and the word you want is somewhere in the middle. Most people hunt for it with their eyes.",
+    "open": "<keys/> opens find-on-page.",
+    "openDone": "The find box is open with the caret in it.",
+    "type": "Type “city”.",
+    "term": "city",
+    "typeDone": "Look: the browser has highlighted every match and counted them.",
+    "next": "To the next match — <keys/>. Walk through them.",
+    "nextDone": "The page scrolls itself to each one in turn.",
+    "prev": "Back through the matches — <keys/>. The same way in reverse.",
+    "prevDone": "There and back.",
+    "close": "Close the find box — <keys/>.",
+    "closeDone": "Closed.",
+    "closing": "No more hunting for a word by eye: the browser finds every match and counts them for you."
+  },
+  "browser5": {
+    "title": "The page and history",
+    "intro": "Chapter five. The easy part is left: turning the page. The mouse wheel is not needed for it.",
+    "down": "One screen down — <keys/>. Turn a few pages.",
+    "downDone": "Exactly one screen, not however far a flick of the wheel happens to go.",
+    "up": "Back up — <keys/>.",
+    "upDone": "That is how long articles get read.",
+    "ends": "All the way down and all the way up — <keys/> and <keysAlt/>. The same shortcuts that took you to the ends of a text in the first course. Have a wander.",
+    "endsDone": "The same keys as in the first course — here they turn the page.",
+    "back": "Now history. Back to the previous page — <keys/>.",
+    "backDone": "The same arrow button, without the mouse.",
+    "forward": "And forward — <keys/>.",
+    "forwardDone": "There and back.",
+    "reload": "Last one: reload the page — <keys/>.",
+    "reloadDone": "Reloaded.",
+    "closing": "Screen by screen, to the top, to the bottom, back through history — and never a mouse wheel."
+  },
+  "browser6": {
+    "title": "The workshop",
+    "intro": "Chapter six, the last. No more prompting: I say what needs doing, you remember how.",
+    "close": "Close the current tab.",
+    "closeDone": "Right.",
+    "oops": "Ah, a mistake. Bring it back.",
+    "oopsDone": "There it is — the shortcut this whole course was for.",
+    "find": "Find the word “morning” on this page.",
+    "term": "morning",
+    "findDone": "Found.",
+    "back": "Go back to the previous page.",
+    "backDone": "Done.",
+    "jump": "And to finish: jump to the last tab in one move.",
+    "jumpDone": "Exactly.",
+    "closing": "Not one prompt, and it all worked. Which means the shortcuts are in your fingers now, not on a list.",
+    "tidy": "Tidy up after yourself: close the find bar.",
+    "tidyDone": "Clean."
   }
 }
