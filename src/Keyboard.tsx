@@ -1,6 +1,5 @@
 import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { type Language } from "./i18n";
 import { platforms, type LessonPlatform } from "./platform";
 import "./Keyboard.css";
 
@@ -44,10 +43,11 @@ const symbolsFor = (currentPlatform: LessonPlatform) =>
 const widthsFor = (currentPlatform: LessonPlatform) =>
   currentPlatform === "macos" ? keyWidths.macos : keyWidths.pc;
 
-const letterLayouts: Record<Language, [string, string, string]> = {
-  en: ["QWERTYUIOP[]", "ASDFGHJKL;'", "ZXCVBNM,./"],
-  ru: ["ЙЦУКЕНГШЩЗХЪ", "ФЫВАПРОЛДЖЭ", "ЯЧСМИТЬБЮ."],
-};
+// Latin, whatever language the app is set to. Every shortcut in every course
+// names a Latin letter, and a board printed in Cyrillic would light the cap
+// two rows away from the one the sentence just asked for. A keyboard sold in
+// Russia carries both legends anyway; this draws the half the lessons use.
+const letters: [string, string, string] = ["QWERTYUIOP[]", "ASDFGHJKL;'", "ZXCVBNM,./"];
 
 const letterCodes = [
   [
@@ -64,8 +64,8 @@ const letterCodes = [
   ],
 ] as const;
 
-const letterRows = (language: Language, currentPlatform: LessonPlatform): Key[][] => {
-  const [top, home, bottom] = letterLayouts[language];
+const letterRows = (currentPlatform: LessonPlatform): Key[][] => {
+  const [top, home, bottom] = letters;
   const names = namesFor(currentPlatform);
   const widths = widthsFor(currentPlatform);
   const symbols = symbolsFor(currentPlatform);
@@ -245,15 +245,14 @@ function Keyboard({
   hintedKeys?: Set<string>;
   pressedKeys: Set<string>;
 }) {
-  const { t, i18n } = useTranslation();
-  const language: Language = i18n.resolvedLanguage === "ru" ? "ru" : "en";
+  const { t } = useTranslation();
   const isMac = currentPlatform === "macos";
   // Apple prints its legends against the outer edge of the board; PC boards
   // centre theirs.
   const centreLegends = (row: Key[]): Key[] => row.map((key) => ({ ...key, align: undefined }));
   const rows = [
     topRow(currentPlatform),
-    ...letterRows(language, currentPlatform),
+    ...letterRows(currentPlatform),
     bottomRow(currentPlatform),
   ].map((row) => (isMac ? row : centreLegends(row)));
   const platformLabel = platforms.find(({ id }) => id === currentPlatform)?.label;
