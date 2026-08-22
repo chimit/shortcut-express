@@ -3,9 +3,9 @@
     <!-- The skirt is the cap's wall, not its shadow: lit from above it is a
          step below the face, and only the bottom edge falls away to dark. -->
     <linearGradient id="skirt" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#414b56"/>
-      <stop offset="0.55" stop-color="#2c343c"/>
-      <stop offset="1" stop-color="#191e23"/>
+      <stop offset="0" stop-color="#495363"/>
+      <stop offset="0.55" stop-color="#343d47"/>
+      <stop offset="1" stop-color="#232a33"/>
     </linearGradient>
     <!-- A MOA face is dished, so it lights the opposite way round to a dome:
          the near rim shades the top of the bowl, the light pools low, and the
@@ -29,9 +29,6 @@
   <rect x="64" y="48" width="896" height="912" rx="208" fill="url(#skirt)"/>
   <path d="M176,466 C176,221 250,152 512,152 C774,152 848,221 848,466 C848,711 774,780 512,780 C250,780 176,711 176,466 Z" fill="url(#face)" stroke="url(#rim)" stroke-width="6"/>
 
-  <g fill="#95c5f8">
-    <rect x="486" y="284" width="52" height="364" rx="26"/>
-    <rect x="418" y="256" width="188" height="52" rx="26"/>
-    <rect x="418" y="624" width="188" height="52" rx="26"/>
-  </g>
+  <!-- The caret alone: the serifs would make it the mouse's I-beam instead. -->
+  <rect x="480" y="272" width="64" height="388" rx="32" fill="#95c5f8"/>
 </svg>
