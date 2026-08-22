@@ -1,239 +1,111 @@
+<p align="center"><img src="design/icon.svg" width="128" alt="Coldkey"></p>
+
 # Coldkey
 
-Coldkey is a desktop course that teaches useful keyboard shortcuts to people who still do most things with a mouse. It is not a shortcut reference and does not begin with a quiz. It is an interactive textbook: explain a familiar problem, demonstrate a faster action, guide the learner through it, and only then ask them to practise without help.
+Coldkey is a desktop course that teaches keyboard shortcuts to people who still do most things with a mouse. Not a reference sheet and not a quiz: an interactive textbook. Each lesson names a familiar problem, shows the faster way, guides the learner through it with the keys lit up, and only then asks them to repeat it without help.
 
-Coldkey is a shelf of short courses. The first teaches text navigation and editing, because those skills are useful in almost every application and give the largest benefit for the fewest shortcuts. The second teaches the browser, where most people spend most of their day.
+## The problem
 
-## Who it is for
+Most people know two or three shortcuts — copy, paste, maybe undo — and do everything else with the mouse: reaching for it to move the caret three words back, to select a line, to close a tab. It works, but it is slow, and by the end of the day it is tiring. The reason it stays that way is not laziness. Shortcuts are genuinely hard to remember: a list of forty combinations read once is forgotten by the afternoon, because nothing in it was ever attached to a moment when you needed it.
 
-The primary learner may know `Cmd/Ctrl+C` and `Cmd/Ctrl+V`, but little else. Coldkey must therefore:
+## The solution
 
-- use everyday language instead of technical documentation language;
-- show where keys are on a realistic keyboard, not only name them;
-- explain why a shortcut is useful before asking the learner to remember it;
-- introduce a small, practical set of shortcuts instead of an exhaustive catalogue;
-- make mistakes safe and let the learner retry immediately.
+Coldkey does not try to teach every shortcut. It covers the handful that come up dozens of times a day, and teaches each one at the moment the problem it solves is on the screen. That is a small set, and it pays off immediately — the first chapter alone removes most of the reaching for the mouse.
 
-## Teaching model
+Coldkey seamlessly supports Windows, macOS and Linux.
 
-Each lesson follows the same short loop:
+## Course structure
 
-1. Put the learner in a recognisable situation, such as correcting a typo in a document.
-2. Acknowledge the mouse-based or repeated-key method they probably use today.
-3. Show the faster shortcut in context and highlight the physical keys.
-4. Let the learner repeat the action with visual guidance.
-5. Remove the guidance and offer a few varied practice attempts.
-6. Finish the chapter with one practical task that combines the new skills.
+### Course one: text without a mouse
 
-This is guided learning first and recall practice second. A learner should never be dropped into an unexplained quiz.
+A five-chapter foundation course, useful in almost every application — text editors, browsers, office suites, design tools. Every chapter types out its own practice document, and a new shortcut is drilled until the hand has it rather than shown once and dropped.
 
-## Product experience
-
-The main screen is deliberately visual and fits inside the default application window without scrolling:
-
-- a dark application shell keeps the learning document and keyboard visually prominent;
-- a large, styled document shows text, a clearly visible caret, and selections;
-- a realistic keyboard shows the learner where keys are and highlights presses and suggested combinations;
-- keycap legends are always Latin, whatever language the interface is set to, because every shortcut names a Latin letter and a Cyrillic board would light a cap two rows from the one the sentence just asked for;
-- a course chooses its stage: the practice document, or a browser the application draws itself with tabs, an address bar, find-on-page and history;
-- OS tabs switch between macOS, Windows, and Linux conventions at any time;
-- the current OS is detected automatically but never prevents inspecting another platform;
-- the interface supports English and Russian, with English as the fallback language;
-- motion must respect the operating system's reduced-motion preference.
-
-Shortcuts, modifier names, keyboard legends, and eventually lesson wording can differ by platform. The same learning objective should feel native on each supported OS rather than mechanically replacing `Cmd` with `Ctrl`.
-
-## Why a desktop application
-
-Browsers are useful for developing the interface, but they cannot reliably own every shortcut Coldkey needs to teach. Some combinations are handled by the browser or operating system first—for example, `Cmd+W` closes a browser tab—so a website cannot provide a consistent training environment for the whole curriculum.
-
-Tauri also gives the project normal desktop distribution paths: the macOS App Store, Microsoft Store, Homebrew, downloadable installers from the project website, and Linux packages. Exact packaging and signing work has not started yet.
-
-## Course one: text without a mouse
-
-A five-chapter foundation course. It teaches a compact set of actions that work
-across text editors, browsers, office applications, and design tools.
-
-Every chapter opens by naming itself and types its practice document out so
-the change of exercise is visible. A new shortcut is never demonstrated once
-and dropped: it is drilled until the hand has it, and a step keeps its keys lit
-only while it is waiting for them.
-
-A step names an intention — "jump a word left", "select all" — and
-`src/actions.ts` states once, per platform, what that intention costs in keys.
-Lesson text is therefore written a single time and reads natively on macOS,
-Windows and Linux, including where the technique genuinely differs rather than
-swapping a modifier.
-
-### Chapter 1 — The cursor without a mouse
+#### Chapter 1 — The cursor without a mouse
 
 - recognise the caret and understand where typed text will appear;
 - move one character at a time, and jump whole lines with the up and down arrows;
 - jump word by word in both directions with `Option+Arrow` on macOS, `Ctrl+Arrow` on Windows and Linux;
 - close the chapter by reaching a typo in the first word and correcting it.
 
-### Chapter 2 — Edges of the line and the document
+#### Chapter 2 — Edges of the line and the document
 
 - move to the beginning and end of a line, and drill both;
 - move to the beginning and end of the whole document, and drill both;
 - meet the first genuinely different technique rather than a swapped modifier: a combination on macOS, a dedicated `Home`/`End` key on Windows and Linux.
 
-### Chapter 3 — Selecting text
+#### Chapter 3 — Selecting text
 
 - learn the one rule — Shift turns any movement already known into a selection;
 - select by character, by word, and out to either end of the line;
 - erase a selection with one key;
 - select the whole document at once, and clear it in the same two moves.
 
-### Chapter 4 — Editing and undoing
+#### Chapter 4 — Editing and undoing
 
 - swap two words that sit in the wrong order: select, copy, cut, tidy the space left behind, move, paste;
 - meet copying before cutting, since cutting is copying that also removes;
 - undo and redo, including the one place the platforms genuinely disagree — `Shift+Cmd+Z` against `Ctrl+Y`;
 - erase whole words without selecting them first.
 
-### Chapter 5 — The workshop
+#### Chapter 5 — The workshop
 
 - three faults in one short note and no keys lit up: the learner recalls rather than follows;
 - fix a typo, put two words back in order, delete a line that does not belong;
 - every task is judged by what the document became, not by which key was pressed.
 
-## Course two: the browser without a mouse
+### Course two: the browser without a mouse
 
-Six chapters, taught on a browser the application draws rather than embeds. A
-real browser inside the window would answer the shortcuts itself and the learner
-would never find out which key did it; here every tab that opens and every jump
-the find bar makes happens because the lesson recognised the keystroke.
+Six chapters, taught on a browser the application draws rather than embeds. A real browser inside the window would answer the shortcuts itself and the learner would never find out which key did it; here every tab that opens and every jump the find bar makes happens because the lesson recognised the keystroke.
 
-### Chapter 1 — Tabs
+#### Chapter 1 — Tabs
 
-- open a tab, close a tab, and — the one nobody knows — bring back the tab you
-  closed by accident;
+- open a tab, close a tab, and — the one nobody knows — bring back the tab you closed by accident;
 - drill opening and closing until the pair is automatic.
 
-### Chapter 2 — Moving between tabs
+#### Chapter 2 — Moving between tabs
 
-- `Ctrl+Tab` and `Ctrl+Shift+Tab`, which are the same on every browser and every
-  system, drilled far enough round the ring to see it wrap;
+- `Ctrl+Tab` and `Ctrl+Shift+Tab`, which are the same on every browser and every system, drilled far enough round the ring to see it wrap;
 - jump straight to a tab by its number, and to the last tab whatever its number.
 
-### Chapter 3 — The address bar
+#### Chapter 3 — The address bar
 
-- put the caret in the address bar and find it already selected, so everything
-  the first course taught about typing over a selection applies unchanged;
+- put the caret in the address bar and find it already selected, so everything the first course taught about typing over a selection applies unchanged;
 - open a site by address, and learn the same box searches when you have none.
 
-### Chapter 4 — Find on the page
+#### Chapter 4 — Find on the page
 
 - open find-on-page, watch every match light up and get counted;
 - walk forward and back through the matches, then put the bar away.
 
-### Chapter 5 — The page and history
+#### Chapter 5 — The page and history
 
 - turn the page a screen at a time instead of reaching for the wheel;
-- reach the top and the bottom with the very shortcuts the first course used for
-  the ends of a text;
+- reach the top and the bottom with the very shortcuts the first course used for the ends of a text;
 - step back and forward through history, and reload.
 
-### Chapter 6 — The workshop
+#### Chapter 6 — The workshop
 
 - five tasks, no keys named and no keys lit;
-- close a tab and bring it back, find a word, tidy up after yourself, step back
-  through history, jump to the last tab.
-
-## Later courses
-
-After the two existing courses, the curriculum can expand in this order:
-
-1. **Windows and applications** — close a window, quit an app, switch apps/windows, and understand the difference between closing and quitting.
-2. **Files and folders** — rename, copy, move and delete, where the platforms genuinely disagree: `Enter` on macOS against `F2` on Windows.
-3. **Dialogs, forms and lists** — Tab between fields, Space to toggle, Enter to accept, Escape to cancel.
-4. **Screenshots** — full screen, area, window, clipboard, and the especially fragmented macOS screenshot workflow.
-5. **Application packs** — small, high-value courses for tools such as Figma, contributed and maintained by their users.
-
-Rare, hard-to-remember shortcuts should not be added merely for completeness. A shortcut belongs in the core curriculum only when it is broadly useful and clearly saves effort.
+- close a tab and bring it back, find a word, tidy up after yourself, step back through history, jump to the last tab.
 
 ## Technology
 
-- [Tauri 2](https://tauri.app/) provides the small cross-platform desktop shell and native distribution targets.
-- React 19 and TypeScript implement the interactive lesson UI.
-- Vite 7 provides the development and build pipeline.
-- Plain CSS with custom properties; the keyboard and the document need precise visual treatment that a utility framework only got in the way of.
-- `i18next` and `react-i18next` provide UI localization.
-- Tauri's OS plugin detects the platform and system locale.
-
-All application and lesson code is intended to remain TypeScript unless native functionality genuinely requires a small Rust command.
-
-## Localization
-
-English is the source and fallback language. Russian is supported from the beginning so localization remains an architectural constraint instead of a later rewrite.
-
-Translation files live in `src/locales/en.json` and `src/locales/ru.json`. Visible interface copy should use translation keys rather than be embedded in React components. On startup, Coldkey uses:
-
-1. the learner's saved language choice;
-2. the OS locale reported by Tauri (or the browser locale during web development);
-3. English as the fallback.
-
-The language can be changed at runtime from the header. Adding a language means adding its JSON resource and registering it in `src/i18n.ts`; lesson-content localization will follow the same language-code convention.
-
-## Extensibility
-
-Application-specific shortcut packs should eventually be data, not compiled UI code. The planned contribution format is a versioned JSON schema with one pack per application or operating system, for example:
-
-```text
-content/
-  macos.json
-  windows.json
-  safari.json
-  figma.json
-```
-
-A pack will describe metadata, supported platforms, lessons, steps, expected key combinations, and localized text. The schema and loader do not exist yet; they should be designed from the working text course instead of guessed in advance.
-
-Contributed packs should:
-
-- teach a small set of high-value shortcuts;
-- include verified mappings for every claimed platform;
-- explain actions in beginner-friendly language;
-- avoid overriding operating-system-reserved combinations;
-- include all required English strings and may add other locales.
+[Tauri 2](https://tauri.app/) for the desktop shell, React 19 and TypeScript for the lessons, Vite 7 for the build, `i18next` for the interface. English and Russian are supported; other languages can be added as translation files.
 
 ## Development
 
-Prerequisites are Node.js, npm, Rust, and the platform dependencies required by Tauri.
+Node.js, npm, Rust, and Tauri's platform dependencies.
 
 ```bash
 npm install
 npm run tauri dev
 ```
 
-Useful checks:
+Checks:
 
 ```bash
 npm run build
 cd src-tauri && cargo check --locked
 ```
 
-The Vite-only interface can be opened with `npm run dev`, but native platform and locale behaviour must also be verified through `npm run tauri dev`.
-
-## Current status
-
-Two courses are written and playable end to end, reached from a course list with
-its own keyboard navigation. The application shell, platform-specific keyboard,
-responsive no-scroll layout, English/Russian localization, native text editing,
-caret and selection feedback, physical-key highlighting, the lesson engine, the
-drawn browser, and the closing summary sheet all exist.
-
-A course declares the stage it is taught on: the sheet of paper the first course
-writes on, or the browser the second one drives. A step is judged by the
-shortcut performed, by what the learner wrote, or by both — the workshop asks
-for a shortcut and a word together.
-
-Still to be built: progress storage, content-pack loading, packaging and
-signing, and automated checks. The lesson data model now has eleven real
-chapters and two stages behind it, which is the evidence a content-pack schema
-should be designed from.
-
-## Open-source status
-
-The project is intended to be open source and accept community shortcut packs. A license has not yet been selected; one must be added before public distribution or external contributions are accepted.
+`npm run dev` opens the interface in an ordinary browser, which is convenient but cannot verify native platform and locale behaviour.
