@@ -1,7 +1,7 @@
 [package]
-name = "coldkey"
+name = "shortcut-express"
 version = "0.1.0"
-description = "A desktop course that teaches useful keyboard shortcuts"
+description = "Interactive desktop course for the most useful keyboard shortcuts on Windows, macOS and Linux. Not another cheatsheet."
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -10,7 +10,7 @@ edition = "2021"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "coldkey_lib"
+name = "shortcut_express_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

@@ -1,8 +1,8 @@
-<p align="center"><img src="design/icon.svg" width="128" alt="Coldkey"></p>
+<p align="center"><img src="design/icon.svg" width="128" alt="Shortcut Express"></p>
 
-# Coldkey
+# Shortcut Express
 
-Coldkey is a desktop course that teaches keyboard shortcuts to people who still do most things with a mouse. Not a reference sheet and not a quiz: an interactive textbook. Each lesson names a familiar problem, shows the faster way, guides the learner through it with the keys lit up, and only then asks them to repeat it without help.
+Shortcut Express is a desktop course that teaches keyboard shortcuts to people who still do most things with a mouse. Not a reference sheet and not a quiz: an interactive textbook. Each lesson names a familiar problem, shows the faster way, guides the learner through it with the keys lit up, and only then asks them to repeat it without help.
 
 ## The problem
 
@@ -10,9 +10,9 @@ Most people know two or three shortcuts — copy, paste, maybe undo — and do e
 
 ## The solution
 
-Coldkey does not try to teach every shortcut. It covers the handful that come up dozens of times a day, and teaches each one at the moment the problem it solves is on the screen. That is a small set, and it pays off immediately — the first chapter alone removes most of the reaching for the mouse.
+Shortcut Express does not try to teach every shortcut. It covers the handful that come up dozens of times a day, and teaches each one at the moment the problem it solves is on the screen. That is a small set, and it pays off immediately — the first chapter alone removes most of the reaching for the mouse.
 
-Coldkey seamlessly supports Windows, macOS and Linux.
+Shortcut Express seamlessly supports Windows, macOS and Linux.
 
 ## Course structure
 

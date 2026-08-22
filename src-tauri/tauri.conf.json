@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Coldkey",
+  "productName": "Shortcut Express",
   "version": "0.1.0",
-  "identifier": "com.chimit.coldkey",
+  "identifier": "com.chimit.shortcutexpress",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Coldkey",
+        "title": "Shortcut Express",
         "width": 917,
         "height": 880,
         "minWidth": 840,

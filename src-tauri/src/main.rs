@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    coldkey_lib::run()
+    shortcut_express_lib::run()
 }

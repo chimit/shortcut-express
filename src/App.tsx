@@ -388,7 +388,7 @@ function App() {
         >
           {/* The application icon itself, at header size. */}
           <img alt="" className="brand__mark" src={iconUrl} />
-          <span>Coldkey</span>
+          <span>Shortcut Express</span>
         </button>
 
         <div className="platform-tabs" role="radiogroup" aria-label={t("platform.label")}>

@@ -7,7 +7,7 @@ import ru from "./locales/ru.json";
 
 export type Language = "en" | "ru";
 
-const languageKey = "coldkey.language";
+const languageKey = "shortcut-express.language";
 
 const normalizeLanguage = (value: string | null): Language =>
   value?.toLowerCase().startsWith("ru") ? "ru" : "en";
