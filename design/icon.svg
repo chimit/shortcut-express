@@ -26,9 +26,15 @@
   <!-- A keycap whose legend is the caret: the key, and the thing it moves. The
        face is a squircle rather than a rounded square, which is what makes a
        MOA cap read as one: the corners eat a third of each edge. -->
-  <rect x="64" y="48" width="896" height="912" rx="208" fill="url(#skirt)"/>
-  <path d="M176,466 C176,221 250,152 512,152 C774,152 848,221 848,466 C848,711 774,780 512,780 C250,780 176,711 176,466 Z" fill="url(#face)" stroke="url(#rim)" stroke-width="6"/>
+  <!-- macOS gives an icon a margin rather than letting it fill its canvas, and
+       a cap drawn edge to edge stands out in a dock of ones that do not. The
+       scale leaves exactly the 100px Apple's grid asks for, about the centre so
+       nothing shifts. -->
+  <g transform="translate(41.1 41.1) scale(0.9196)">
+    <rect x="64" y="48" width="896" height="912" rx="208" fill="url(#skirt)"/>
+    <path d="M176,466 C176,221 250,152 512,152 C774,152 848,221 848,466 C848,711 774,780 512,780 C250,780 176,711 176,466 Z" fill="url(#face)" stroke="url(#rim)" stroke-width="6"/>
 
-  <!-- The caret alone: the serifs would make it the mouse's I-beam instead. -->
-  <rect x="480" y="272" width="64" height="388" rx="32" fill="#95c5f8"/>
+    <!-- The caret alone: the serifs would make it the mouse's I-beam instead. -->
+    <rect x="480" y="272" width="64" height="388" rx="32" fill="#95c5f8"/>
+  </g>
 </svg>
