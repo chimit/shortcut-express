@@ -10,7 +10,6 @@ import Keyboard from "./Keyboard";
 import Summary from "./Summary";
 import { useBrowser, browserKeys } from "./useBrowser";
 import { useDocument } from "./useDocument";
-import iconUrl from "../design/icon.svg";
 import "./App.css";
 
 // Stands in wherever no step is running — the course list, the closing screen.
@@ -31,6 +30,25 @@ const pcWindowControls = [
   windowGlyph("square"),
   windowGlyph("M1.7 1.7l7.6 7.6M9.3 1.7l-7.6 7.6"),
 ];
+
+// Drawn for the same reason as those: an arrow character sits on the text
+// baseline and will not line up with the label beside it. A chevron rather than
+// a full arrow, which is what the platform itself uses for going back.
+const backArrow = (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    height="12"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="1.6"
+    viewBox="0 0 12 12"
+    width="12"
+  >
+    <path d="M7.5 2.5L4 6l3.5 3.5" />
+  </svg>
+);
 
 // A shortcut is several keys, so each one is drawn as its own cap.
 function KeyCombo({ combo, currentPlatform }: { combo: Combo; currentPlatform: LessonPlatform }) {
@@ -379,17 +397,22 @@ function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <button
-          aria-label={t("courses.back")}
-          className="brand"
-          disabled={!course}
-          onClick={toList}
-          type="button"
-        >
-          {/* The application icon itself, at header size. */}
-          <img alt="" className="brand__mark" src={iconUrl} />
-          <span>Shortcut Express</span>
-        </button>
+        {/* A window's header says where you are, not what you launched — the
+            application's own name is already in the dock and the menu bar. The
+            wrapper stays even when empty so the tabs keep their column. */}
+        <div className="app-header__lead">
+          {course && (
+            <button
+              aria-label={t("courses.back")}
+              className="back"
+              onClick={toList}
+              type="button"
+            >
+              {backArrow}
+              {t("courses.title")}
+            </button>
+          )}
+        </div>
 
         <div className="platform-tabs" role="radiogroup" aria-label={t("platform.label")}>
           {platforms.map(({ id, label }) => (

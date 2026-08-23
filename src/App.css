@@ -79,34 +79,23 @@ button:focus-visible {
   padding: 0 28px;
 }
 
-/* The way back to the list, and only once there is a list to go back to. */
-.brand {
+/* The way back to the list, and only once there is a list to go back to. It is
+   navigation rather than a title, so it sits back until pointed at. */
+.back {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   padding: 0;
   border: 0;
-  color: inherit;
+  color: var(--muted);
   background: transparent;
-  font-size: 16px;
-  font-weight: 720;
-  letter-spacing: -0.02em;
+  font-size: 13px;
   text-align: left;
-}
-
-.brand:not(:disabled) {
   cursor: pointer;
 }
 
-/* The application icon file itself, so the header and the app icon can never
-   drift apart. drop-shadow rather than box-shadow: the glow follows the cap,
-   not the transparent box around it — and it is lit by the same light as the
-   shell behind it, so the colour is the one the backdrop's own glow is set in
-   rather than a second glow with opinions of its own. */
-.brand__mark {
-  width: 34px;
-  height: 34px;
-  filter: drop-shadow(0 0 8px #345462) drop-shadow(0 0 18px #345462);
+.back:hover {
+  color: var(--text);
 }
 
 /* Both switches are the same control: set once, then ignored for the rest of
