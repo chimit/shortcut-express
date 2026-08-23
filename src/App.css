@@ -68,7 +68,7 @@ button:focus-visible {
   height: 100dvh;
   overflow: hidden;
   background:
-    radial-gradient(circle at 75% 6%, #345462, #34546200 34rem),
+    radial-gradient(circle at 75% 6%, #34546280, #34546200 22rem),
     var(--canvas);
 }
 
