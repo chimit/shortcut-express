@@ -88,6 +88,37 @@ Six chapters, taught on a browser the application draws rather than embeds. A re
 - five tasks, no keys named and no keys lit;
 - close a tab and bring it back, find a word, tidy up after yourself, step back through history, jump to the last tab.
 
+## Installation
+
+Download the file for your system from the [latest release](https://github.com/chimit/shortcut-express/releases/latest).
+
+Shortcut Express is not yet signed with a paid developer certificate, so macOS and Windows both warn that they cannot verify who published it. The warnings are about the missing certificate, not about the contents of the build; every release is compiled in the open from the source in this repository.
+
+### macOS
+
+Open the `.dmg` and drag Shortcut Express into Applications. The first launch is refused with a message about Apple being unable to check the application for malware. Dismiss it, then open System Settings, go to Privacy & Security, scroll to the Security section, and use the "Open Anyway" button that has appeared there. Confirm once more and the application starts. Later launches ask nothing.
+
+The button only shows up after a refused launch, so try opening the application first.
+
+### Windows
+
+Run the `.exe` installer. SmartScreen reports that it protected your PC; choose "More info" and then "Run anyway".
+
+### Linux
+
+The `.deb` package suits Debian, Ubuntu, Mint, Pop!_OS and their relatives:
+
+```bash
+sudo apt install ./shortcut-express_*_amd64.deb
+```
+
+The `.AppImage` runs on any distribution and installs nothing:
+
+```bash
+chmod +x Shortcut\ Express_*.AppImage
+./Shortcut\ Express_*.AppImage
+```
+
 ## Technology
 
 [Tauri 2](https://tauri.app/) for the desktop shell, React 19 and TypeScript for the lessons, Vite 7 for the build, `i18next` for the interface. English and Russian are supported; other languages can be added as translation files.
