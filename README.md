@@ -109,14 +109,14 @@ Run the `.exe` installer. SmartScreen reports that it protected your PC; choose 
 The `.deb` package suits Debian, Ubuntu, Mint, Pop!_OS and their relatives:
 
 ```bash
-sudo apt install ./shortcut-express_*_amd64.deb
+sudo apt install ./Shortcut.Express_*_amd64.deb
 ```
 
 The `.AppImage` runs on any distribution and installs nothing:
 
 ```bash
-chmod +x Shortcut\ Express_*.AppImage
-./Shortcut\ Express_*.AppImage
+chmod +x Shortcut.Express_*.AppImage
+./Shortcut.Express_*.AppImage
 ```
 
 ## Technology
