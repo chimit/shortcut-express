@@ -92,6 +92,34 @@ Six chapters, taught on a browser the application draws rather than embeds. A re
 - five tasks, no keys named and no keys lit;
 - close a tab and bring it back, find a word, tidy up after yourself, step back through history, jump to the last tab.
 
+### Course three: any application
+
+Four chapters on the keys that mean the same thing whatever program is in front of you. Taught on the first course's sheet of paper, inside an application that can save it, open another one and print it — all of it drawn, so every dialog that opens does so because the lesson recognised the keystroke.
+
+#### Chapter 1 — Saving
+
+- the dot in the title bar, and what it means that it is there;
+- save the document, name it, and meet the four keys every dialog is driven by: Tab between fields, Space on a checkbox, Enter to accept, Escape to cancel;
+- save again and watch it happen without a dialog, because the file already has a name;
+- save a second copy under a different name, then change your mind.
+
+#### Chapter 2 — New, open, print
+
+- start a new document and open an existing one, walking the file list with the arrows the first course opened with;
+- send it to the printer and put the dialog away again;
+- close the document with the same key that closed a browser tab;
+- quit the application — the one keystroke the app catches instead of obeying, so it can be tried safely.
+
+#### Chapter 3 — Zoom
+
+- make the text bigger, then smaller, then exactly the size it was;
+- the same three keys in the browser, in mail, in an editor, in maps.
+
+#### Chapter 4 — The workshop
+
+- five tasks, no keys named and no keys lit;
+- save under a given name, open a named file, enlarge it, send it to print, and cancel.
+
 ## Installation
 
 Download the file for your system from the [latest release](https://github.com/chimit/shortcut-express/releases/latest).
