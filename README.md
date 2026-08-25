@@ -4,6 +4,8 @@
 
 Shortcut Express is a desktop course that teaches keyboard shortcuts to people who still do most things with a mouse. Not a reference sheet and not a quiz: an interactive textbook. Each lesson names a familiar problem, shows the faster way, guides the learner through it with the keys lit up, and only then asks them to repeat it without help.
 
+<p align="center"><img src="design/demo.gif" width="917" alt="A chapter of the first course: the practice document, the narrator, and the keys lighting up as they are pressed"></p>
+
 ## The problem
 
 Most people know two or three shortcuts — copy, paste, maybe undo — and do everything else with the mouse: reaching for it to move the caret three words back, to select a line, to close a tab. It works, but it is slow, and by the end of the day it is tiring. The reason it stays that way is not laziness. Shortcuts are genuinely hard to remember: a list of forty combinations read once is forgotten by the afternoon, because nothing in it was ever attached to a moment when you needed it.
@@ -56,6 +58,8 @@ A five-chapter foundation course, useful in almost every application — text ed
 ### Course two: the browser without a mouse
 
 Six chapters, taught on a browser the application draws rather than embeds. A real browser inside the window would answer the shortcuts itself and the learner would never find out which key did it; here every tab that opens and every jump the find bar makes happens because the lesson recognised the keystroke.
+
+<p align="center"><img src="design/browser.png" width="917" alt="The browser course: tabs opened by Command+T, with the keys lit on the keyboard below"></p>
 
 #### Chapter 1 — Tabs
 
