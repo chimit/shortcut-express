@@ -20,7 +20,7 @@ jobs:
         run: |
           id=$(gh api "repos/${{ github.repository }}/releases" \
             -f tag_name='${{ github.ref_name }}' \
-            -f name='Shortcut Express ${{ github.ref_name }}' \
+            -f name='${{ github.ref_name }}' \
             -F draft=true --jq .id)
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
