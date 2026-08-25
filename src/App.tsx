@@ -6,8 +6,10 @@ import { comboFor, comboParts, comboShort, keysOf, matches, type ActionId, type 
 import { courses, type Step } from "./courses";
 import Browser, { BrowserTabs } from "./Browser";
 import CourseList from "./CourseList";
+import Dialog from "./Dialog";
 import Keyboard from "./Keyboard";
 import Summary from "./Summary";
+import { useAppStage, appKeys, zoomOf } from "./useAppStage";
 import { useBrowser, browserKeys } from "./useBrowser";
 import { useDocument } from "./useDocument";
 import "./App.css";
@@ -90,8 +92,17 @@ function App() {
   const chapter = course && !finished ? course.chapters[chapterIndex] : null;
   const step = chapter?.steps[stepIndex] ?? noStep;
 
+  // The third stage: the same sheet of paper, inside an application that can
+  // save it, open another one and print it.
+  const isApp = course?.stage === "app";
+  const stage = useAppStage(chapterIndex, listOpen);
+
   // The document only changes on the steps that say so; the rest inherit it.
-  const documentKey = chapter?.steps.slice(0, stepIndex + 1).reverse().find((s) => s.document)?.document;
+  // Unless the learner opened something: then the window shows that instead,
+  // and the text is retyped exactly as a change of chapter retypes it.
+  const stepDocument = chapter?.steps.slice(0, stepIndex + 1).reverse().find((s) => s.document)?.document;
+  const shown = isApp ? stage.state.shown : "step";
+  const documentKey = shown === "step" ? stepDocument : shown === "closed" ? undefined : `app.${shown}.text`;
   const { draft: written, caret, ready: docReady, follow } = useDocument(editorRef, documentKey ? t(documentKey) : "");
 
   // The second stage: a drawn browser instead of a sheet of paper. Its scene
@@ -104,7 +115,18 @@ function App() {
   // name covers them and every expectation below reads the same either way.
   const [typed, setTyped] = useState("");
   useEffect(() => setTyped(""), [chapterIndex, stepIndex]);
-  const draft = isBrowser ? typed : written;
+  // Whatever field the learner is writing in. A dialog takes that over while
+  // it is open, the way the address bar does in the browser course.
+  const draft = isBrowser || (isApp && stage.state.dialog) ? typed : written;
+
+  // What the title bar calls the document. A name the learner gave it wins:
+  // saving a file from the list under a new one has to rename it, or the title
+  // would go on showing the name it was opened under.
+  const windowName =
+    shown === "closed"
+      ? t("app.closed")
+      : stage.state.name ||
+        (shown.startsWith("file") ? t(`app.${shown}.name`) : t("app.untitled"));
 
   // Selecting is the familiar movement with Shift held, so the step says so
   // rather than the table carrying a second copy of every entry.
@@ -112,6 +134,11 @@ function App() {
     const base = comboFor(action, currentPlatform);
     return step.withShift ? { ...base, shift: true } : base;
   };
+
+  const wrote = (needle: string) =>
+    stage.state.dialog
+      ? draft.toLowerCase().includes(needle.toLowerCase())
+      : draft.includes(needle);
 
   const needed = step.expect ? (step.repeat ?? 1) : 0;
   // The listener has to know how far the drill has got without being rebuilt
@@ -124,17 +151,26 @@ function App() {
   // "Gone" is only meaningful once the text that should go is actually there:
   // a document still being typed out contains nothing at all.
   const textDone =
-    (step.expectText ? draft.includes(t(step.expectText)) : true) &&
+    // Case counts in the document, where the learner is repairing real prose,
+    // and not in a dialog, where they are naming a file: someone asked for
+    // "Report" who typed "report" has done the exercise.
+    (step.expectText ? wrote(t(step.expectText)) : true) &&
     (step.expectGone ? docReady && !draft.includes(t(step.expectGone)) : true) &&
     (step.expectEmpty ? docReady && draft.length === 0 : true) &&
-    (step.expectCaretAfter ? draft.slice(0, caret).trimEnd().endsWith(t(step.expectCaretAfter)) : true);
+    (step.expectCaretAfter ? draft.slice(0, caret).trimEnd().endsWith(t(step.expectCaretAfter)) : true) &&
+    (step.expectSaved
+      ? stage.state.saved && stage.state.name.toLowerCase() === t(step.expectSaved).toLowerCase()
+      : true) &&
+    (step.expectShown ? stage.state.shown === step.expectShown : true);
   const satisfied = done >= needed && textDone;
   const asked =
     needed > 0 ||
     Boolean(step.expectText) ||
     Boolean(step.expectGone) ||
     Boolean(step.expectEmpty) ||
-    Boolean(step.expectCaretAfter);
+    Boolean(step.expectCaretAfter) ||
+    Boolean(step.expectSaved) ||
+    Boolean(step.expectShown);
   // Lit only while the step is waiting: a key shown a step early gets pressed
   // early, and then the learner is asked to press it again.
   const nextCombo = comboFor("nextStep", currentPlatform);
@@ -309,7 +345,39 @@ function App() {
         }
       }
 
-      // Nothing is prevented here: the keystroke still has to do its own work.
+      // The drawn application answers its own shortcuts for the same reason the
+      // browser does. The stage itself decides what is its business: a Space
+      // with the caret in the name field, or a Tab with no dialog open, is not,
+      // and falls straight through to the document underneath.
+      if (isApp) {
+        const acted = appKeys.find(
+          (action) =>
+            // Enter is the app's own way on. A dialog gets it only while a step
+            // is asking for it — otherwise a learner reading the two steps that
+            // explain the open dialog would accept it instead of moving on, and
+            // the explanation would never be seen. Escape is the opposite case:
+            // an open dialog always answers it, because a dialog that could not
+            // be dismissed is a trap, and dismissing one is what this course
+            // teaches Escape for.
+            !(goes && !claimed) &&
+            matches(event, comboFor(action, currentPlatform)),
+        );
+        if (acted && stage.handle(acted)) {
+          event.preventDefault();
+          // A keystroke the stage took is not also a lesson keystroke — unless
+          // the step asked for it, in which case the common path below counts
+          // it. Escape closing a dialog must not also step backwards.
+          if (!claimed) return;
+        }
+      }
+
+      // Quitting is the one shortcut this application must normally let through,
+      // and the one the third course would rather the learner tried than took
+      // on trust. Both are true if it is held back on exactly one step: the one
+      // that asks for it. Everywhere else Command+Q still quits.
+      if (claimed && matches(event, comboFor("quit", currentPlatform))) event.preventDefault();
+
+      // Nothing else is prevented here: the keystroke still has to do its own work.
       // An arrow that was counted must also move the caret, and Enter in the
       // find bar has already been held back above. The return is what keeps the
       // lesson from also treating it as "next step".
@@ -363,13 +431,15 @@ function App() {
       window.removeEventListener("blur", releaseAll);
       window.removeEventListener("focus", refocus);
     };
-  }, [browser.handle, browser.jump, browser.pageRef, chapterIndex, course, currentPlatform, finished, isBrowser, needed, pickedCourse, step, stepIndex]);
+  }, [browser.handle, browser.jump, browser.pageRef, chapterIndex, course, currentPlatform, finished, isApp, isBrowser, needed, pickedCourse, stage.handle, step, stepIndex]);
 
   // A small helper, not a cage: a step that asks for a keystroke takes the
   // focus back, but the learner is free to click away at any time.
+  // A dialog outranks it: while one is open the caret belongs to whatever
+  // control the dialog put it in, and it comes back here when the dialog goes.
   useEffect(() => {
-    if (asked) editorRef.current?.focus();
-  }, [asked, chapterIndex, stepIndex]);
+    if (asked && !stage.state.dialog) editorRef.current?.focus();
+  }, [asked, chapterIndex, stepIndex, stage.state.dialog]);
 
   // The picked card carries the focus, so the arrows and Tab agree with each
   // other and a screen reader is told what the arrows just did.
@@ -459,10 +529,22 @@ function App() {
             {isBrowser && chapter ? (
               <BrowserTabs browser={browser} />
             ) : (
-              <span>
-                {chapter
-                  ? t("documentTitle", { current: chapterIndex + 1, title: t(chapter.title) })
-                  : t(finished ? "finish.title" : "courses.title")}
+              <span className="editor-panel__title">
+                {/* An application names the file in its title bar, and marks it
+                    with a dot until the file on disk matches what is on screen.
+                    The whole first chapter is taught off that dot. */}
+                {isApp && chapter ? (
+                  <>
+                    {windowName}
+                    {shown !== "closed" && !stage.state.saved && (
+                      <span aria-label={t("app.unsaved")} className="editor-panel__dot" role="img" />
+                    )}
+                  </>
+                ) : chapter ? (
+                  t("documentTitle", { current: chapterIndex + 1, title: t(chapter.title) })
+                ) : (
+                  t(finished ? "finish.title" : "courses.title")
+                )}
               </span>
             )}
             <div aria-hidden="true" className="window-controls window-controls--pc">
@@ -470,7 +552,11 @@ function App() {
             </div>
 
           </div>
-          <div className="document-canvas" data-stage={isBrowser && chapter ? "browser" : "paper"}>
+          <div
+            className="document-canvas"
+            data-stage={isBrowser && chapter ? "browser" : "paper"}
+            style={isApp ? ({ "--zoom": zoomOf(stage.state.zoom) } as React.CSSProperties) : undefined}
+          >
             {/* One bar for the whole course, drawn along the top edge of the page
                 itself and clipped by its corners, the way a browser draws its
                 own loading. A segment per chapter, a tick per step: two separate
@@ -519,16 +605,39 @@ function App() {
 
             {chapter && isBrowser && <Browser browser={browser} onType={setTyped} />}
 
-            {chapter && !isBrowser && (
+            {chapter && !isBrowser && shown !== "closed" && (
               <textarea
                 aria-label={t("editor.cursor")}
                 autoCorrect="off"
                 key={`${currentLanguage}-${documentKey}`}
-                onInput={follow}
+                onInput={(event) => {
+                  follow(event);
+                  // Typing is what puts the dot back. Nothing else can report
+                  // it, and the programmatic typing that lays a chapter's text
+                  // out sets the value directly, so it never fires this.
+                  if (isApp) stage.touch();
+                }}
                 onKeyUp={follow}
                 onSelect={follow}
                 ref={editorRef}
                 spellCheck={false}
+              />
+            )}
+
+            {/* A window with nothing in it. Closing the document is the last
+                thing the second chapter asks for, and an application that
+                carried on showing the text would have taught nothing. */}
+            {chapter && isApp && shown === "closed" && (
+              <p className="document-canvas__empty">{t("app.closedBody")}</p>
+            )}
+
+            {chapter && isApp && (
+              <Dialog
+                currentPlatform={currentPlatform}
+                name={windowName}
+                onType={setTyped}
+                stage={stage}
+                text={written}
               />
             )}
 

@@ -139,6 +139,10 @@
     "browser": {
       "title": "The browser without a mouse",
       "blurb": "Switch tabs, search a page and step back through history — all from the keyboard."
+    },
+    "app": {
+      "title": "Any application",
+      "blurb": "Save, open, print and zoom — the same keys in every program you use."
     }
   },
   "finish": {
@@ -176,7 +180,20 @@
     "historyBack": "Back and forward through history",
     "reload": "Reload the page",
     "findPrev": "Previous match",
-    "pageUp": "One screen up"
+    "pageUp": "One screen up",
+    "save": "Save",
+    "saveAs": "Save as",
+    "newDoc": "New document",
+    "openDoc": "Open document",
+    "print": "Print",
+    "closeDoc": "Close document",
+    "quit": "Quit the application",
+    "acceptDialog": "Accept a dialog",
+    "cancelDialog": "Cancel, close a dialog",
+    "nextField": "Next field",
+    "toggle": "Tick a checkbox",
+    "zoom": "Bigger or smaller",
+    "zoomReset": "Actual size"
   },
   "browser": {
     "tabsLabel": "Tabs",
@@ -314,5 +331,124 @@
     "closing": "Not one prompt, and it all worked. Which means the shortcuts are in your fingers now, not on a list.",
     "tidy": "Tidy up after yourself: close the find bar.",
     "tidyDone": "Clean."
+  },
+  "app": {
+    "untitled": "Untitled",
+    "unsaved": "Unsaved changes",
+    "closed": "No document",
+    "closedBody": "The document is closed. The window stayed — the application is still running.",
+    "cancel": "Cancel",
+    "save": {
+      "title": "Save document",
+      "name": "Name",
+      "copy": "Keep a copy in the cloud",
+      "accept": "Save"
+    },
+    "open": {
+      "title": "Open document",
+      "accept": "Open"
+    },
+    "print": {
+      "title": "Print",
+      "note": "One sheet, black and white.",
+      "accept": "Print"
+    },
+    "new": {
+      "text": ""
+    },
+    "file1": {
+      "name": "To do.txt",
+      "text": "Call the workshop about the keys.\nCollect the parcel before Friday.\nWrite back to Nat."
+    },
+    "file2": {
+      "name": "Recipe.txt",
+      "text": "Dough: flour, water, a pinch of salt.\nKnead it, let it rest half an hour.\nRoll it out thin."
+    },
+    "file3": {
+      "name": "Draft letter.txt",
+      "text": "Good afternoon!\n\nThank you for the quote — I have read it through and have almost no questions. One I will ask separately."
+    }
+  },
+  "app1": {
+    "title": "Saving",
+    "text": "Notes from the meeting.\n\nThe quote arrives on Wednesday. They will answer about the dates by the end of the week.\n\nStatus: ",
+    "intro": "Chapter one. In front of you is a document in an ordinary application. Everything that follows works the same in an editor, in mail and in a spreadsheet.",
+    "dot": "Look at the title bar: there is a dot beside the name. It means the document has changed and those changes have not been saved yet.",
+    "save": "Save it — <keys/>. Press.",
+    "saveDone": "A dialog: the document has no name yet, and the application is asking for one.",
+    "named": "The name is already selected — just like the address bar. Type over it, no need to erase.",
+    "type": "Call the document “Report”.",
+    "name": "Report",
+    "typeDone": "Done.",
+    "tab": "Move to the next field — <keys/>.",
+    "tabDone": "The ring moved to the checkbox. That is how Tab walks any dialog: one field after another.",
+    "space": "A checkbox is switched with the space bar — <keys/>.",
+    "spaceDone": "Switched. Space ticks and unticks any box — but only while the caret is not in a text field.",
+    "accept": "Confirm — <keys/>. That key always presses the blue button.",
+    "acceptDone": "Saved.",
+    "gone": "And the dot in the title went out: the disk now holds what the screen does.",
+    "touch": "The note is unfinished — there is nothing after “Status:”. Type the word “urgent”.",
+    "added": "urgent",
+    "touchDone": "The dot is back — there is something to save again.",
+    "again": "Save once more — <keys/>.",
+    "againDone": "No dialog this time: the document has a name, so the application simply wrote the file.",
+    "saveAs": "And if you need a second copy under a different name — <keys/>.",
+    "saveAsDone": "The same dialog, asking for a new name.",
+    "cancel": "Changed your mind — <keys/>.",
+    "cancelDone": "The dialog closed and nothing changed. Escape cancels any dialog.",
+    "closing": "A dot in the title, a dialog with a name in it, Tab between fields, Space on a checkbox, Enter and Escape at the end. All of it turns up again and again."
+  },
+  "app2": {
+    "title": "New, open, print",
+    "text": "A couple of lines, so there is something to work with.\nNothing important here.",
+    "intro": "Chapter two. Every program has a File menu — and you do not have to go into it with the mouse.",
+    "new": "Start a new document — <keys/>.",
+    "newDone": "A blank sheet.",
+    "blank": "It has no name yet: the dot appears the moment you write something.",
+    "open": "Open one that already exists — <keys/>.",
+    "openDone": "A list of files, with the caret on the first.",
+    "pick": "Move down the list — <keys/>.",
+    "pickDone": "The arrows walk a list exactly as they walk lines of text. Nothing new.",
+    "enter": "Open the one you picked — <keys/>.",
+    "enterDone": "The file opened in the same window.",
+    "print": "Print it — <keys/>.",
+    "printDone": "The print dialog. Enter would send the sheet to the printer.",
+    "escape": "We have no printer here, so put the dialog away — <keys/>.",
+    "escapeDone": "Gone.",
+    "close": "Close the document — <keys/>. The same key that closed a tab in the browser.",
+    "closeDone": "The document is closed and the window stayed.",
+    "quit": "And the last one, the one people most often do not know: <keys/> closes not the document but the whole application. Go ahead and press it — nothing will happen here, because this one keystroke is caught.",
+    "quitDone": "Nothing closed — but in any other program that would have taken the window and the application with it.",
+    "closing": "New, open, print, close — and the menu was never needed."
+  },
+  "app3": {
+    "title": "Zoom",
+    "text": "Small print is an everyday thing: a contract, somebody else's slides, an article on an unfamiliar site. You do not have to squint at it.",
+    "intro": "Chapter three. The size of the text is changed from the keyboard, and almost everywhere in the same way.",
+    "in": "Bigger — <keys/>. Press it a few times.",
+    "inDone": "Larger.",
+    "out": "Smaller — <keys/>. A few times again.",
+    "outDone": "That is as small as it goes.",
+    "reset": "Back to the original size — <keys/>.",
+    "resetDone": "A hundred per cent.",
+    "everywhere": "These three work in the browser, in mail, in an editor, in maps. And zero always means “as it was”.",
+    "closing": "Small print is no longer a reason to lean in: two keys change the size and a third puts it back."
+  },
+  "app4": {
+    "title": "The workshop",
+    "text": "A note with a few things to do to it.\nNo keys are named from here on.",
+    "intro": "Chapter four. No more help: nothing named and nothing lit.",
+    "save": "Save this note under the name “Letter”.",
+    "name": "Letter",
+    "saveDone": "Saved, and the dot in the title went out.",
+    "open": "Now open the file called Draft letter.",
+    "openDone": "Open.",
+    "bigger": "Rather small. Make the text bigger.",
+    "biggerDone": "Better.",
+    "print": "Send it to the printer.",
+    "printDone": "The print dialog is open.",
+    "away": "And put that dialog away without printing.",
+    "awayDone": "Clear.",
+    "closing": "Not one key named — and all of it worked."
   }
 }

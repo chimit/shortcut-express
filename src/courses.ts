@@ -1,5 +1,6 @@
 import type { ActionId } from "./actions";
 import type { Scene } from "./useBrowser";
+import type { Shown } from "./useAppStage";
 
 export type Step = {
   // Translation key for the line the narrator says. <keys/> in it is filled
@@ -34,6 +35,13 @@ export type Step = {
   // Satisfied once nothing is left. An empty document is the one state
   // expectGone cannot express: every string contains the empty string.
   expectEmpty?: boolean;
+  // Satisfied once the document has been saved under this name. A workshop
+  // asks for the outcome — the file exists and is written — and leaves the
+  // learner to remember that it takes a shortcut, a name and a confirmation.
+  expectSaved?: string;
+  // Satisfied once the window is showing this. The mirror of the above for
+  // opening rather than saving.
+  expectShown?: Shown;
   // Satisfied once the caret sits after this text, trailing space ignored:
   // a word jump lands right after the word on macOS and after the space that
   // follows it on Windows. For steps whose whole job is getting somewhere,
@@ -66,9 +74,10 @@ export type Course = {
   title: string;
   blurb: string;
   chapters: Chapter[];
-  // What the course is taught on. Absent means the sheet of paper the first
-  // course is written on.
-  stage?: "browser";
+  // What the course is taught on. Absent means the bare sheet of paper the
+  // first course is written on; "app" is that same sheet inside an application
+  // that can save, open and print it.
+  stage?: "browser" | "app";
   // What the closing sheet lists, in the order it should read — which is not
   // the order the chapters teach in: erasing a word comes last in the course
   // but belongs beside the selecting it saves you from. Written out rather
@@ -380,6 +389,115 @@ const browserSummary: Summary[] = [
   { keys: "reload" },
 ];
 
+// The third course: the keys that mean the same thing whatever application is
+// in front of you. Taught on the first course's sheet of paper, because that is
+// what an application has in it — plus the dialogs it puts over the top.
+const appChapters: Chapter[] = [
+  {
+    title: "app1.title",
+    steps: [
+      { say: "app1.intro", document: "app1.text" },
+      // The dot in the title bar is the whole feedback loop of this chapter:
+      // it goes out when the document is written and comes back when it is
+      // touched. Naming it first means every step after this one is visible.
+      { say: "app1.dot" },
+      { say: "app1.save", keys: "save", expect: "save", done: "app1.saveDone" },
+      // The name arrives selected, exactly as the address bar did in the
+      // browser course. Typing over a selection was the first course's lesson.
+      { say: "app1.named" },
+      { say: "app1.type", expectText: "app1.name", done: "app1.typeDone" },
+      { say: "app1.tab", keys: "nextField", expect: "nextField", done: "app1.tabDone" },
+      // Space only becomes a tick once Tab has moved off the name field, which
+      // is why this step can only come after that one.
+      { say: "app1.space", keys: "toggle", expect: "toggle", done: "app1.spaceDone" },
+      { say: "app1.accept", keys: "acceptDialog", expect: "acceptDialog", done: "app1.acceptDone" },
+      { say: "app1.gone" },
+      // Touching the document brings the dot back, which is what makes the
+      // second Save worth pressing: it has something to answer.
+      { say: "app1.touch", expectText: "app1.added", done: "app1.touchDone" },
+      { say: "app1.again", keys: "save", expect: "save", done: "app1.againDone" },
+      { say: "app1.saveAs", keys: "saveAs", expect: "saveAs", done: "app1.saveAsDone" },
+      { say: "app1.cancel", keys: "cancelDialog", expect: "cancelDialog", done: "app1.cancelDone" },
+      { say: "app1.closing" },
+    ],
+  },
+  {
+    title: "app2.title",
+    steps: [
+      { say: "app2.intro", document: "app2.text" },
+      { say: "app2.new", keys: "newDoc", expect: "newDoc", done: "app2.newDone" },
+      { say: "app2.blank" },
+      { say: "app2.open", keys: "openDoc", expect: "openDoc", done: "app2.openDone" },
+      // The arrows the first course opened with, doing in a list what they did
+      // in a text. Nothing new to learn, which is the point of putting them here.
+      { say: "app2.pick", keys: "moveDown", expect: "moveDown", repeat: 2, done: "app2.pickDone" },
+      { say: "app2.enter", keys: "acceptDialog", expect: "acceptDialog", done: "app2.enterDone" },
+      { say: "app2.print", keys: "print", expect: "print", done: "app2.printDone" },
+      { say: "app2.escape", keys: "cancelDialog", expect: "cancelDialog", done: "app2.escapeDone" },
+      // The same keystroke that closed a tab in the browser course.
+      { say: "app2.close", keys: "closeDoc", expect: "closeDoc", done: "app2.closeDone" },
+      // Safe to try, because the one step that asks for it is also the one
+      // step that holds it back — see the guard in App. It is the one place in
+      // this course where the platforms disagree about the idea and not only
+      // about the modifier: macOS separates closing a window from quitting the
+      // application, and Windows does not.
+      { say: "app2.quit", keys: "quit", expect: "quit", done: "app2.quitDone" },
+      { say: "app2.closing" },
+    ],
+  },
+  {
+    title: "app3.title",
+    steps: [
+      { say: "app3.intro", document: "app3.text" },
+      { say: "app3.in", keys: "zoomIn", expect: "zoomIn", repeat: 3, done: "app3.inDone" },
+      // Further out than it came in, so the shrinking is unmistakable and the
+      // reset below has somewhere to travel from.
+      { say: "app3.out", keys: "zoomOut", expect: "zoomOut", repeat: 5, done: "app3.outDone" },
+      { say: "app3.reset", keys: "zoomReset", expect: "zoomReset", done: "app3.resetDone" },
+      { say: "app3.everywhere" },
+      { say: "app3.closing" },
+    ],
+  },
+  {
+    // The workshop: the outcome is named and the keystroke is not. Two of these
+    // are judged by what the window became — a file written under a name, a
+    // different document open — because that is the honest test of "save it".
+    title: "app4.title",
+    steps: [
+      { say: "app4.intro", document: "app4.text" },
+      // Two requirements apiece. The outcome is what is judged — a file written
+      // under a name, a different document open — but the Enter that confirms
+      // the dialog has to be asked for as well, or the lesson takes it back and
+      // walks on to the next step with the dialog still standing open. Naming
+      // it costs the workshop nothing: no step here prints its keys.
+      { say: "app4.save", expect: "acceptDialog", expectSaved: "app4.name", done: "app4.saveDone" },
+      { say: "app4.open", expect: "acceptDialog", expectShown: "file3", done: "app4.openDone" },
+      { say: "app4.bigger", expect: "zoomIn", repeat: 2, done: "app4.biggerDone" },
+      { say: "app4.print", expect: "print", done: "app4.printDone" },
+      { say: "app4.away", expect: "cancelDialog", done: "app4.awayDone" },
+      { say: "app4.closing" },
+    ],
+  },
+];
+
+const appSummary: Summary[] = [
+  { keys: "save" },
+  { keys: "saveAs" },
+  { keys: "newDoc" },
+  { keys: "openDoc" },
+  { keys: "print" },
+  { keys: "closeDoc" },
+  { keys: "quit" },
+  { keys: "acceptDialog" },
+  { keys: "cancelDialog" },
+  { keys: "nextField" },
+  { keys: "toggle" },
+  // One row for both directions, the way the arrows are paired: a course that
+  // taught bigger taught smaller in the same breath.
+  { keys: "zoomIn", label: "action.zoom" },
+  { keys: "zoomReset" },
+];
+
 export const courses: Course[] = [
   {
     title: "course.text.title",
@@ -393,5 +511,12 @@ export const courses: Course[] = [
     chapters: browserChapters,
     stage: "browser",
     summary: browserSummary,
+  },
+  {
+    title: "course.app.title",
+    blurb: "course.app.blurb",
+    chapters: appChapters,
+    stage: "app",
+    summary: appSummary,
   },
 ];

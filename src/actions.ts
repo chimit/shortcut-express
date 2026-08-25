@@ -206,6 +206,92 @@ const actions = {
     linux: { ctrl: true, code: "KeyR" },
   },
 
+  // --- Any application ------------------------------------------------------
+  // The keys that mean the same thing whatever is on the screen. Only the
+  // modifier changes between platforms, which makes this the most portable
+  // course in the book and the least interesting table in this file.
+  save: {
+    macos: { meta: true, code: "KeyS" },
+    windows: { ctrl: true, code: "KeyS" },
+    linux: { ctrl: true, code: "KeyS" },
+  },
+  saveAs: {
+    macos: { meta: true, shift: true, code: "KeyS" },
+    windows: { ctrl: true, shift: true, code: "KeyS" },
+    linux: { ctrl: true, shift: true, code: "KeyS" },
+  },
+  newDoc: {
+    macos: { meta: true, code: "KeyN" },
+    windows: { ctrl: true, code: "KeyN" },
+    linux: { ctrl: true, code: "KeyN" },
+  },
+  openDoc: {
+    macos: { meta: true, code: "KeyO" },
+    windows: { ctrl: true, code: "KeyO" },
+    linux: { ctrl: true, code: "KeyO" },
+  },
+  print: {
+    macos: { meta: true, code: "KeyP" },
+    windows: { ctrl: true, code: "KeyP" },
+    linux: { ctrl: true, code: "KeyP" },
+  },
+  // The same keystroke the browser course closed a tab with. Not a repetition:
+  // one key closes whatever is open, and saying so once is the whole lesson.
+  closeDoc: {
+    macos: { meta: true, code: "KeyW" },
+    windows: { ctrl: true, code: "KeyW" },
+    linux: { ctrl: true, code: "KeyW" },
+  },
+  // The one shortcut the app holds back rather than lets through, and only on
+  // the single step that asks for it — see the guard in App. macOS separates
+  // closing a window from quitting the application and Windows does not, which
+  // is why this row is the course's one genuine difference of idea.
+  quit: {
+    macos: { meta: true, code: "KeyQ" },
+    windows: { alt: true, code: "F4" },
+    linux: { alt: true, code: "F4" },
+  },
+  // Inside a dialog. Enter and Escape yet again, under the names a dialog
+  // gives them; Tab and Space have waited until there was a dialog to use
+  // them in, because outside one they type rather than navigate.
+  acceptDialog: {
+    macos: { code: "Enter" },
+    windows: { code: "Enter" },
+    linux: { code: "Enter" },
+  },
+  cancelDialog: {
+    macos: { code: "Escape" },
+    windows: { code: "Escape" },
+    linux: { code: "Escape" },
+  },
+  nextField: {
+    macos: { code: "Tab" },
+    windows: { code: "Tab" },
+    linux: { code: "Tab" },
+  },
+  toggle: {
+    macos: { code: "Space" },
+    windows: { code: "Space" },
+    linux: { code: "Space" },
+  },
+  // The cap says "=" and the lesson says "plus", because that is what is
+  // printed above it and what every menu calls this command.
+  zoomIn: {
+    macos: { meta: true, code: "Equal" },
+    windows: { ctrl: true, code: "Equal" },
+    linux: { ctrl: true, code: "Equal" },
+  },
+  zoomOut: {
+    macos: { meta: true, code: "Minus" },
+    windows: { ctrl: true, code: "Minus" },
+    linux: { ctrl: true, code: "Minus" },
+  },
+  zoomReset: {
+    macos: { meta: true, code: "Digit0" },
+    windows: { ctrl: true, code: "Digit0" },
+    linux: { ctrl: true, code: "Digit0" },
+  },
+
   // Plain Enter continues, the way a chat window sends. A newline in the
   // practice document is Shift+Enter, which no lesson claims.
   nextStep: {
@@ -260,6 +346,9 @@ const codeNames: Record<string, string> = {
   Space: "Space",
   BracketLeft: "[",
   BracketRight: "]",
+  // Nobody calls it "Command and equals". The cap prints the plus above it.
+  Equal: "+",
+  Minus: "−",
   Enter: "Enter",
   Escape: "Esc",
   Backspace: "Delete",

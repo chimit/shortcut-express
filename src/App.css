@@ -191,6 +191,23 @@ button:focus-visible {
   letter-spacing: -0.01em;
 }
 
+.editor-panel__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* The mark every application puts beside a filename that has changed since it
+   was last written. Drawn rather than typed, like everything else on this
+   chrome: a bullet character sits wherever the font puts it in its box and
+   will not line up with the name beside it. */
+.editor-panel__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
 .window-controls {
   display: flex;
   align-items: center;
@@ -214,6 +231,9 @@ button:focus-visible {
 }
 
 .document-canvas {
+  /* Full size until the third course says otherwise. */
+  --zoom: 1;
+
   position: relative;
   display: flex;
   overflow: hidden;
@@ -231,6 +251,16 @@ button:focus-visible {
    the toolbar, and no browser insets its toolbar. */
 .document-canvas[data-stage="browser"] {
   padding: 0;
+}
+
+/* What is left when the document is closed. */
+.document-canvas__empty {
+  display: grid;
+  flex: 1;
+  margin: 0;
+  color: #969b96;
+  font-size: 17px;
+  place-items: center;
 }
 
 .document-canvas__label {
@@ -261,7 +291,7 @@ button:focus-visible {
   /* A hairline cannot win on weight, so it wins on colour. */
   caret-color: var(--accent);
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  font-size: clamp(25px, 3vw, 34px);
+  font-size: calc(clamp(25px, 3vw, 34px) * var(--zoom));
   font-weight: 400;
   line-height: var(--line-height);
   letter-spacing: -0.02em;

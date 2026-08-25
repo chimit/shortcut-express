@@ -1,0 +1,214 @@
+/* The dialogs of the third course. They sit over the sheet of paper the first
+   course writes on, so they are drawn as a real dialog is: a panel that dims
+   what it covers without hiding it, because the document is still the subject
+   and the dialog is only asking about it. */
+
+.dialog__over {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  /* A dialog taller than the page scrolls inside the shade. Left to the page,
+     focusing the panel would scroll the page instead — carrying the shade up
+     with it and leaving a bright strip along the bottom. */
+  overflow: auto;
+  background: rgba(28, 32, 29, 0.28);
+  inset: 0;
+}
+
+.dialog {
+  width: min(440px, 88%);
+  height: fit-content;
+  /* Centred by its own margins rather than by the container's alignment: a
+     dialog taller than the page would have its top cut off and out of reach
+     if the shade centred it. */
+  margin: auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f7f6f2;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+  outline: none;
+}
+
+.dialog__title {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.dialog__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.dialog__label {
+  flex: none;
+  font-size: 14px;
+}
+
+.dialog__input {
+  min-width: 0;
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid rgba(36, 40, 36, 0.22);
+  border-radius: 6px;
+  color: var(--paper-ink);
+  background: #fff;
+  caret-color: var(--accent);
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+/* Which control the keys are aimed at is the one thing these dialogs have to
+   make obvious: the whole chapter is about moving between them. A ring, drawn
+   the way the system draws its own. */
+.dialog__field[data-on="true"] .dialog__input,
+.dialog__check[data-on="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74, 134, 232, 0.32);
+}
+
+.dialog__input::selection {
+  background: #b9d4fb;
+}
+
+.dialog__check {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 20px;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* The real control keeps the semantics and takes the focus; the box beside it
+   is what gets seen, because a native tick cannot be drawn to match the page. */
+.dialog__box {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dialog__tick {
+  display: grid;
+  width: 17px;
+  height: 17px;
+  flex: none;
+  border: 1px solid rgba(36, 40, 36, 0.35);
+  border-radius: 4px;
+  color: #fff;
+  background: #fff;
+  place-items: center;
+}
+
+.dialog__check:has(.dialog__box:checked) .dialog__tick {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.dialog__list {
+  margin: 0 0 20px;
+  padding: 6px;
+  border: 1px solid rgba(36, 40, 36, 0.16);
+  border-radius: 8px;
+  background: #fff;
+  list-style: none;
+}
+
+.dialog__file {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.dialog__file[data-on="true"] {
+  color: #fff;
+  background: var(--accent);
+}
+
+/* A page with its corner turned, which is what a file looks like in every
+   list anyone has ever opened. */
+.dialog__paper {
+  width: 11px;
+  height: 14px;
+  flex: none;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.65;
+  clip-path: polygon(0 0, 58% 0, 100% 34%, 100% 100%, 0 100%);
+}
+
+/* The print preview: a page, shrunk, with the document's own words on it. */
+.dialog__sheet {
+  height: 124px;
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(36, 40, 36, 0.16);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.dialog__sheet-text {
+  margin: 0;
+  color: #4a504b;
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.dialog__note {
+  margin: 0 0 18px;
+  color: #6c716c;
+  font-size: 13px;
+}
+
+.dialog__buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dialog__button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border: 1px solid rgba(36, 40, 36, 0.2);
+  border-radius: 7px;
+  background: #fff;
+  font-size: 14px;
+}
+
+/* Every dialog has one button Enter belongs to, and it says so in colour. */
+.dialog__button--default {
+  border-color: transparent;
+  color: #fff;
+  background: var(--accent);
+}
+
+.dialog__key {
+  padding: 1px 5px;
+  border-radius: 4px;
+  opacity: 0.75;
+  background: rgba(36, 40, 36, 0.12);
+  font: inherit;
+  font-size: 12px;
+}
+
+.dialog__button--default .dialog__key {
+  background: rgba(255, 255, 255, 0.24);
+}

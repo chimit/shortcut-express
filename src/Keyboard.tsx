@@ -94,8 +94,10 @@ const letterRows = (currentPlatform: LessonPlatform): Key[][] => {
 const topRow = (currentPlatform: LessonPlatform): Key[] => [
   { id: "Backquote", symbol: "~", label: "`" },
   ..."1234567890".split("").map((label) => ({ id: `Digit${label}`, label })),
-  { id: "Minus", label: "−" },
-  { id: "Equal", label: "=" },
+  // Both legends, as they are printed: the lesson calls this key "plus" because
+  // every menu does, and the cap has to agree with the sentence.
+  { id: "Minus", symbol: "_", label: "−" },
+  { id: "Equal", symbol: "+", label: "=" },
   {
     id: "Backspace",
     label: namesFor(currentPlatform).backspace,

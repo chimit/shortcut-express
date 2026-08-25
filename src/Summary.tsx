@@ -15,9 +15,11 @@ const opposite: Record<string, string> = {
   End: "Home",
   BracketLeft: "BracketRight",
   BracketRight: "BracketLeft",
+  Equal: "Minus",
+  Minus: "Equal",
 };
 
-const axes = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "BracketLeft", "BracketRight"];
+const axes = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "BracketLeft", "BracketRight", "Equal", "Minus"];
 
 // The course's own summary, drawn in the legends of the platform on screen.
 const rowsOf = (course: Course, currentPlatform: LessonPlatform) =>
