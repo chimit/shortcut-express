@@ -8,9 +8,10 @@ export const kofiUrl = "https://ko-fi.com/chimit";
 // both live in a browser, and the webview refuses to become one.
 export const openExternal = (url: string) => {
   if (isTauri()) {
-    void openUrl(url);
+    // A webview that cannot hand the URL on has nowhere to report it either.
+    openUrl(url).catch(() => {});
   } else {
-    window.open(url, "_blank", "noopener");
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 };
 
