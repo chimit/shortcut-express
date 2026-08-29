@@ -58,15 +58,15 @@ function Summary({ course, currentPlatform }: { course: Course; currentPlatform:
             <dt>{t(label)}</dt>
             <dd>
               <span className="key-combo">
-                {[...mods, ...codes].map((part, index) => (
+                {[...mods, ...codes].map((part, partIndex) => (
                   <span key={part}>
                     {/* Between the modifiers and the key, but not between the
                         two directions of one movement. */}
-                    {index > 0 && index <= mods.length && (
+                    {partIndex > 0 && partIndex <= mods.length && (
                       <span className="key-combo__plus">+</span>
                     )}
                     <kbd className="key-cap">
-                      {index < mods.length ? part : keyName(part, currentPlatform)}
+                      {partIndex < mods.length ? part : keyName(part, currentPlatform)}
                     </kbd>
                   </span>
                 ))}
