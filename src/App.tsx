@@ -268,14 +268,12 @@ function App() {
         return next;
       });
 
-      // The three links out of the application are buttons like any other, and
-      // Enter on a focused button belongs to that button: without this, a
-      // learner who tabs to the thanks and presses Enter is walked on to the
-      // next screen instead, with nothing to show for the press.
-      if (
-        (event.key === "Enter" || event.key === " ") &&
-        (document.activeElement as HTMLElement | null)?.dataset.link !== undefined
-      ) {
+      // Enter on a focused button belongs to that button: the press is what
+      // clicks it, and the app's own Enter would otherwise preventDefault the
+      // click away and walk the learner on to the next screen instead. True of
+      // every chrome button — the links out, the platform tabs, the language
+      // switch, the progress ticks, both navigation arrows.
+      if ((event.key === "Enter" || event.key === " ") && document.activeElement instanceof HTMLButtonElement) {
         return;
       }
 
@@ -521,7 +519,6 @@ function App() {
           <button
             aria-label={t("links.github")}
             className="header-tools__link"
-            data-link=""
             onClick={() => openExternal(githubUrl)}
             onMouseDown={keepFocus}
             title={t("links.github")}
@@ -532,7 +529,6 @@ function App() {
           <button
             aria-label={t("links.kofi")}
             className="header-tools__link"
-            data-link=""
             onClick={() => openExternal(kofiUrl)}
             onMouseDown={keepFocus}
             title={t("links.kofi")}
@@ -747,10 +743,8 @@ function App() {
                 {t("finish.support")}
                 <button
                   className="narration__support-button"
-                  data-link=""
                   onClick={() => openExternal(kofiUrl)}
                   onMouseDown={keepFocus}
-                  title={kofiUrl}
                   type="button"
                 >
                   {heartMark}
