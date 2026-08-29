@@ -59,7 +59,7 @@ function Summary({ course, currentPlatform }: { course: Course; currentPlatform:
                       <span className="key-combo__plus">+</span>
                     )}
                     <kbd className="key-cap">
-                      {index < mods.length ? part : keyName(part)}
+                      {index < mods.length ? part : keyName(part, currentPlatform)}
                     </kbd>
                   </span>
                 ))}

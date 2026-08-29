@@ -351,15 +351,20 @@ const codeNames: Record<string, string> = {
   Minus: "−",
   Enter: "Enter",
   Escape: "Esc",
-  Backspace: "Delete",
 };
 
 // What is printed on one keycap. Codes we have no legend for are shown as
 // they come: a key nobody has named is still a key.
-export const keyName = (code: string): string =>
-  // Every letter and digit prints itself, so only the keys whose legend is not
-  // their code need naming above.
-  codeNames[code] ?? code.replace(/^(Key|Digit)/, "");
+export const keyName = (code: string, currentPlatform: LessonPlatform): string =>
+  // The one cap whose legend depends on the board: Apple prints "delete" where
+  // a PC prints "Backspace", and the sentence has to say what the cap says.
+  code === "Backspace"
+    ? currentPlatform === "macos"
+      ? "Delete"
+      : "Backspace"
+    : // Every letter and digit prints itself, so only the keys whose legend is
+      // not their code need naming above.
+      codeNames[code] ?? code.replace(/^(Key|Digit)/, "");
 
 // One entry per physical key, so a sentence can draw each of them as its own
 // cap. Spelled out, because a beginner reads "Option", not "⌥".
@@ -370,7 +375,7 @@ export const comboParts = (combo: Combo, currentPlatform: LessonPlatform): strin
     ...(combo.alt ? [names.alt] : []),
     ...(combo.shift ? [names.shift] : []),
     ...(combo.meta ? [names.meta] : []),
-    keyName(combo.code),
+    keyName(combo.code, currentPlatform),
   ];
 };
 
@@ -383,7 +388,7 @@ const shortModifiers: Record<LessonPlatform, Record<Modifier, string>> = {
 // The compact form that fits on a button.
 export const comboShort = (combo: Combo, currentPlatform: LessonPlatform): string => {
   const names = shortModifiers[currentPlatform];
-  const code = combo.code === "Enter" ? "⏎" : keyName(combo.code);
+  const code = combo.code === "Enter" ? "⏎" : keyName(combo.code, currentPlatform);
   const parts = [
     ...(combo.ctrl ? [names.ctrl] : []),
     ...(combo.alt ? [names.alt] : []),
