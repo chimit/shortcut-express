@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { changeLanguage, type Language } from "./i18n";
+import { githubMark, githubUrl, heartMark, kofiMark, kofiUrl, openExternal } from "./links";
 import { initialPlatform, platforms, type LessonPlatform } from "./platform";
 import { comboFor, comboParts, comboShort, keysOf, matches, type ActionId, type Combo } from "./actions";
 import { courses, type Step } from "./courses";
@@ -267,6 +268,17 @@ function App() {
         return next;
       });
 
+      // The three links out of the application are buttons like any other, and
+      // Enter on a focused button belongs to that button: without this, a
+      // learner who tabs to the thanks and presses Enter is walked on to the
+      // next screen instead, with nothing to show for the press.
+      if (
+        (event.key === "Enter" || event.key === " ") &&
+        (document.activeElement as HTMLElement | null)?.dataset.link !== undefined
+      ) {
+        return;
+      }
+
       // Enter goes deeper and Escape comes back out, everywhere: into a course
       // and on to the next step, back a step and out of the course. One rule,
       // so the app can be driven before any of it has been explained.
@@ -448,13 +460,15 @@ function App() {
   }, [course, pickedCourse]);
 
   // The very first screen already carries a document, a narrator and a
-  // keyboard; the mechanic waits until the learner has read the rest.
+  // keyboard; the mechanic waits until the learner has read the rest. The
+  // closing screen waits far longer still: the way out is the last thing it
+  // should offer, well after the sheet has been read and the thanks noticed.
   useEffect(() => {
-    if (!course || finished || stepIndex !== 0) {
+    if (!course || (!finished && stepIndex !== 0)) {
       setShowHint(false);
       return;
     }
-    const timer = setTimeout(() => setShowHint(true), 10000);
+    const timer = setTimeout(() => setShowHint(true), finished ? 45000 : 10000);
     return () => clearTimeout(timer);
   }, [course, finished, stepIndex]);
 
@@ -503,20 +517,45 @@ function App() {
           ))}
         </div>
 
-        <div className="language-switch" aria-label={t("language.label")} role="group">
-          {(["en", "ru"] as const).map((language) => (
-            <button
-              aria-label={t(language === "en" ? "language.english" : "language.russian")}
-              aria-pressed={currentLanguage === language}
-              className="language-switch__button"
-              key={language}
-              onClick={() => void changeLanguage(language)}
-              onMouseDown={keepFocus}
-              type="button"
-            >
-              {language.toUpperCase()}
-            </button>
-          ))}
+        <div className="header-tools">
+          <button
+            aria-label={t("links.github")}
+            className="header-tools__link"
+            data-link=""
+            onClick={() => openExternal(githubUrl)}
+            onMouseDown={keepFocus}
+            title={t("links.github")}
+            type="button"
+          >
+            {githubMark}
+          </button>
+          <button
+            aria-label={t("links.kofi")}
+            className="header-tools__link"
+            data-link=""
+            onClick={() => openExternal(kofiUrl)}
+            onMouseDown={keepFocus}
+            title={t("links.kofi")}
+            type="button"
+          >
+            {kofiMark}
+          </button>
+
+          <div className="language-switch" aria-label={t("language.label")} role="group">
+            {(["en", "ru"] as const).map((language) => (
+              <button
+                aria-label={t(language === "en" ? "language.english" : "language.russian")}
+                aria-pressed={currentLanguage === language}
+                className="language-switch__button"
+                key={language}
+                onClick={() => void changeLanguage(language)}
+                onMouseDown={keepFocus}
+                type="button"
+              >
+                {language.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -697,6 +736,28 @@ function App() {
             {needed > 0 && !satisfied && (
               <span className="narration__count">{done} / {needed}</span>
             )}
+
+            {/* The one ask in the whole application. It waits until the course
+                has already been given away, and it is said here rather than on
+                the sheet because this is the panel that has been talking all
+                along — and it arrives a beat late, so a reader who has stopped
+                reading this panel still catches the movement. */}
+            {finished && (
+              <p className="narration__support">
+                {t("finish.support")}
+                <button
+                  className="narration__support-button"
+                  data-link=""
+                  onClick={() => openExternal(kofiUrl)}
+                  onMouseDown={keepFocus}
+                  title={kofiUrl}
+                  type="button"
+                >
+                  {heartMark}
+                  {t("finish.supportButton")}
+                </button>
+              </p>
+            )}
           </div>
 
           {course && (
@@ -713,7 +774,7 @@ function App() {
                 <span className="narration__hint">
                   <Trans
                     components={{ keys: <KeyCombo combo={nextCombo} currentPlatform={currentPlatform} /> }}
-                    i18nKey="step.continueHint"
+                    i18nKey={finished ? "finish.backHint" : "step.continueHint"}
                   />
                 </span>
               )}

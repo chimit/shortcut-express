@@ -39,15 +39,22 @@ const rowsOf = (course: Course, currentPlatform: LessonPlatform) =>
 function Summary({ course, currentPlatform }: { course: Course; currentPlatform: LessonPlatform }) {
   const { t } = useTranslation();
   const rows = rowsOf(course, currentPlatform);
+  // The two columns rise side by side, so the sheet settles in the time one
+  // column takes rather than in the time both do.
+  const perColumn = Math.ceil(rows.length / 2);
 
   return (
     <div className="finish">
       <dl
         className="finish__sheet"
-        style={{ gridTemplateRows: `repeat(${Math.ceil(rows.length / 2)}, auto)` }}
+        style={{ gridTemplateRows: `repeat(${perColumn}, auto)` }}
       >
-        {rows.map(({ label, mods, codes }) => (
-          <div className="finish__row" key={label}>
+        {rows.map(({ label, mods, codes }, index) => (
+          <div
+            className="finish__row"
+            key={label}
+            style={{ "--row": (index % perColumn) + 1 } as React.CSSProperties}
+          >
             <dt>{t(label)}</dt>
             <dd>
               <span className="key-combo">

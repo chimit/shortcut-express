@@ -4,6 +4,10 @@
     "english": "English",
     "russian": "Russian"
   },
+  "links": {
+    "github": "Source code on GitHub",
+    "kofi": "Support on Ko-fi"
+  },
   "platform": {
     "label": "Operating system",
     "currentDevice": "This device"
@@ -147,7 +151,10 @@
   },
   "finish": {
     "title": "Course complete",
-    "say": "Course complete. Here is everything it taught — keep it handy for a while. <enter/> goes back to the course list."
+    "say": "Course complete. Here is all it taught — keep it handy for a while.",
+    "support": "If you learned something useful here, you can thank the author.",
+    "supportButton": "Thank the author",
+    "backHint": "Press <keys/> to go back to the course list"
   },
   "action": {
     "moveLeft": "Move the cursor by characters",
@@ -167,7 +174,7 @@
     "redo": "Redo",
     "newTab": "New tab",
     "closeTab": "Close the tab",
-    "reopenTab": "Bring back a closed tab",
+    "reopenTab": "Bring back a tab",
     "nextTab": "Next tab",
     "prevTab": "Previous tab",
     "thirdTab": "Tab by number",
@@ -177,7 +184,7 @@
     "findNext": "Next match",
     "pageDown": "One screen down",
     "pageEnds": "Top or bottom of the page",
-    "historyBack": "Back and forward through history",
+    "historyBack": "Back and forward",
     "reload": "Reload the page",
     "findPrev": "Previous match",
     "pageUp": "One screen up",

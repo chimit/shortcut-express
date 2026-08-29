@@ -111,8 +111,29 @@ button:focus-visible {
   background: #11161a;
 }
 
-.language-switch {
+/* The switch used to sit at the end of the header by itself; now it shares the
+   corner with the two outward links. */
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   justify-self: end;
+}
+
+.header-tools__link {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border: 0;
+  border-radius: 5px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: color 140ms ease;
+}
+
+.header-tools__link:hover {
+  color: #fff;
 }
 
 .platform-tabs__tab,
@@ -362,6 +383,56 @@ button:focus-visible {
   color: var(--text);
   font-size: 17px;
   line-height: 1.45;
+}
+
+/* The closing screen is the one that says two things, so it packs them a
+   little tighter than a lesson's single reply. */
+.narration__body:has(.narration__support) {
+  gap: 6px;
+  padding-block: 14px;
+}
+
+/* Said on the closing screen only, under the line that ends the course. The
+   sentence keeps the panel's voice; the button is the one light plate on the
+   dark shell, which is what an eye that has stopped reading still lands on. */
+.narration__body .narration__support {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(110, 231, 183, 0.25);
+  color: #cfe8da;
+  font-size: 13px;
+  line-height: 1.4;
+  animation: finish-rise 420ms cubic-bezier(0.22, 0.68, 0.36, 1) 700ms backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .narration__support {
+    animation: none;
+  }
+}
+
+.narration__support-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ok-bg);
+  background: var(--tip-plate);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.narration__support-button:hover {
+  background: #fff;
+  transform: translateY(-1px);
 }
 
 .narration__count {
@@ -636,10 +707,19 @@ button:focus-visible {
      names are long and the editing ones are short, and an even split wrapped
      the left column while the right one sat half empty. */
   grid-template-columns: repeat(2, minmax(0, max-content));
-  gap: 6px 32px;
+  gap: 3px 32px;
   margin: 0;
   align-content: start;
   justify-content: space-between;
+}
+
+/* The sheet rises row by row, both columns at once: a course that ends should
+   feel like it arrived somewhere. */
+@keyframes finish-rise {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
 }
 
 .finish__row {
@@ -647,6 +727,14 @@ button:focus-visible {
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
+  animation: finish-rise 380ms cubic-bezier(0.22, 0.68, 0.36, 1) backwards;
+  animation-delay: calc(var(--row, 0) * 45ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finish__row {
+    animation: none;
+  }
 }
 
 .finish__row dt {
@@ -665,6 +753,12 @@ button:focus-visible {
 .finish__row .key-cap {
   min-width: 30px;
   text-align: center;
+}
+
+/* The closing sheet has to hold everything a course taught at once, so the
+   page gives it back some of the margin the lesson pages keep. */
+.document-canvas:has(.finish) {
+  padding-block: clamp(14px, 1.8vh, 18px);
 }
 
 /* On paper a cap is printed, not lit: dark ink on a light key, the way a

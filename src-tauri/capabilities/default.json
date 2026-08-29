@@ -7,6 +7,13 @@
   ],
   "permissions": [
     "core:default",
-    "os:default"
+    "os:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "https://github.com/chimit/shortcut-express" },
+        { "url": "https://ko-fi.com/chimit" }
+      ]
+    }
   ]
 }
