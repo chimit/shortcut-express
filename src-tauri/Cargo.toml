@@ -1,6 +1,6 @@
 [package]
 name = "shortcut-express"
-version = "0.2.1"
+version = "0.2.2"
 description = "Interactive desktop course for the most useful keyboard shortcuts on Windows, macOS and Linux. Not another cheatsheet."
 edition = "2021"
 
