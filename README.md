@@ -124,17 +124,9 @@ Four chapters on the keys that mean the same thing whatever program is in front 
 
 Download the file for your system from the [latest release](https://github.com/chimit/shortcut-express/releases/latest).
 
-Shortcut Express is not yet signed with a paid developer certificate, so macOS and Windows both warn that they cannot verify who published it. The warnings are about the missing certificate, not about the contents of the build; every release is compiled in the open from the source in this repository.
-
-### macOS
-
-Open the `.dmg` and drag Shortcut Express into Applications. The first launch is refused with a message about Apple being unable to check the application for malware. Dismiss it, then open System Settings, go to Privacy & Security, scroll to the Security section, and use the "Open Anyway" button that has appeared there. Confirm once more and the application starts. Later launches ask nothing.
-
-The button only shows up after a refused launch, so try opening the application first.
-
 ### Windows
 
-Run the `.exe` installer. SmartScreen reports that it protected your PC; choose "More info" and then "Run anyway".
+The installer is not signed yet, so SmartScreen says it protected your PC. The button to continue is hidden: choose "More info", then "Run anyway".
 
 ### Linux
 
